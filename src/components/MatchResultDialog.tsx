@@ -8,7 +8,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MatchingCV } from "@/types/MatchResult";
-import { JobMatch } from "@/types/constants";
 import {
   headingsPlugin,
   listsPlugin,
@@ -25,7 +24,7 @@ interface MatchResultDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "cv" | "job";
-  data: MatchingCV[] | JobMatch;
+  data: MatchingCV[];
   title: string;
 }
 

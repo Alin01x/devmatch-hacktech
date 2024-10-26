@@ -149,7 +149,7 @@ export const handleJobMatching = async (
         ...matchingCV,
         overallScore: overallAnalysis.score,
         overallAnalysis: {
-          aiScore: overallAnalysis.score / 100,
+          aiScore: overallAnalysis.score,
           aiReasoning: overallAnalysis.reasoning,
         },
         finalScore: 0,
@@ -183,7 +183,7 @@ export const handleJobMatching = async (
     userRequest: matchingCVs[0].cv.full_content,
   });
 
-  matchingCVs[0].bestMatchReasoning = bestMatchReasoning;
+  matchingCVs[0].bestMatchReasoning = bestMatchReasoning.reasoning;
 
   // Ensure all scores have no decimals
   matchingCVs.forEach((cv) => {

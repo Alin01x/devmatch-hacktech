@@ -11,7 +11,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-import { Briefcase, Plus, X, Search, Info, Loader2 } from "lucide-react";
+import { Briefcase, X, Search, Info, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,22 +36,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
-import {
-  CVMatch,
-  MATCH_RESULT_SAMPLES,
-  NEW_MATCH_RESULT_SAMPLE_CV,
-} from "@/types/constants";
 import { SKILLS as SKILLS_OPTIONS } from "@/constants/skills";
-import { MatchingCV } from "@/types/MatchResult";
 import MatchResultDialog from "@/components/MatchResultDialog";
+import { MatchingCV } from "@/types/MatchResult";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -75,8 +65,8 @@ const JobMatchingTab: React.FC = () => {
   const [skills, setSkills] = useState<Skills>({});
   const [newSkill, setNewSkill] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [matches, setMatches] = useState<CVMatch[]>([]);
-  const [isResultsOpen, setIsResultsOpen] = useState(true);
+  const [matches, setMatches] = useState<MatchingCV[]>([]);
+  const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const { toast } = useToast();
   const [errors, setErrors] = useState<{
@@ -154,8 +144,6 @@ const JobMatchingTab: React.FC = () => {
       return;
     }
 
-    console.log("Submitting Job Description...");
-
     try {
       setIsLoading(true);
       const response = await fetch("/api/job-matching", {
@@ -169,6 +157,8 @@ const JobMatchingTab: React.FC = () => {
       });
 
       const data = await response.json();
+      setMatches(data.data);
+      setIsResultsOpen(true);
       console.log("received response", data);
     } catch (e) {
       console.error(e);
@@ -377,7 +367,7 @@ const JobMatchingTab: React.FC = () => {
             isOpen={isResultsOpen}
             onOpenChange={setIsResultsOpen}
             mode="cv"
-            data={matches.length > 0 ? matches : [NEW_MATCH_RESULT_SAMPLE_CV]}
+            data={matches || []}
             title="Top 5 Matching Candidates"
           />
         </div>

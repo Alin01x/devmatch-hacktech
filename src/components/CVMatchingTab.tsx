@@ -19,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { JobMatch, SAMPLE_JOB_MATCH } from "@/types/constants";
 import { toast } from "@/hooks/use-toast";
 import {
   headingsPlugin,

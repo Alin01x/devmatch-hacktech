@@ -54,8 +54,7 @@ export class SkillAnalysisService {
       }
     });
 
-    // Normalize final score to be between 0 and 1
-    analysis.score = totalScore / 100;
+    analysis.score = totalScore;
     analysis.reasoning = this.generateReasoning(analysis);
 
     return analysis;

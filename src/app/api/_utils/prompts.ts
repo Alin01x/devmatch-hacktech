@@ -19,6 +19,8 @@ export const MATCH_CV_TO_JOB_PROMPT = `You are an expert technical recruiter. An
 2. Industry experience relevance
 3. Overall qualification fit
 
+Important: keep your reasoning concise and to the point.
+
 Provide a score from between 0 and 100 and detailed reasoning. Return response as JSON with format:
 {
   "score": number,
@@ -31,6 +33,8 @@ export const BEST_MATCH_REASONING_PROMPT = `You are an expert technical recruite
 3. Overall qualification fit
 
 Provide a detailed reasoning of why this CV is the best match for the job description.
+
+Important: keep your reasoning concise and to the point.
 
 Return response as JSON with format:
 {
