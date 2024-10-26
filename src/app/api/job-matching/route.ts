@@ -112,6 +112,13 @@ export const handleJobMatching = async (
       technicalSkillsMatched: technicalAnalysis.matchedSkills,
       technicalSkillsMissing: technicalAnalysis.missingSkills,
       technicalDetailedScoring: technicalAnalysis.detailedScoring,
+      overallScore: 0,
+      overallAnalysis: {
+        aiScore: 0,
+        aiReasoning: "",
+        naturalLanguageScore: 0,
+        naturalLanguageReasoning: "",
+      },
     });
   }
 

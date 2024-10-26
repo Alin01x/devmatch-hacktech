@@ -20,8 +20,6 @@ export async function sendGPTRequest({
   maxTokens = 16384,
 }: GPTRequestOptions) {
   try {
-    console.log("...Sending GPT Request...");
-
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
       { role: "system", content: systemPrompt },
       {
@@ -41,7 +39,6 @@ export async function sendGPTRequest({
     const parsedResponse = JSON.parse(
       response.choices[0].message.content || ""
     );
-    console.log("...GPT Response:", parsedResponse);
 
     return parsedResponse;
   } catch (error) {

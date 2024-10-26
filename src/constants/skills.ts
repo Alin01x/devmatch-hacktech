@@ -39,7 +39,7 @@ export const SKILLS = [
   "Progressive Web Apps",
 
   // Frontend Frameworks & Libraries
-  "React",
+  "ReactJS",
   "Angular",
   "Vue.js",
   "Svelte",
