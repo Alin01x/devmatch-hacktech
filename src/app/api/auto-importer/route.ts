@@ -1,5 +1,4 @@
 import { headers } from "../_utils/requestHeaders";
-import { ExperienceLevel } from "@/types/Enums";
 import { extractCvData } from "../_extractors/extractCvData";
 import { supabase } from "@/lib/supabase";
 import fs from "fs";

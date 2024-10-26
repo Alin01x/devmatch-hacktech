@@ -2,7 +2,6 @@ import { headers } from "../_utils/requestHeaders";
 import { JobDescription } from "../../../types/JobDescription";
 import { supabase } from "@/lib/supabase";
 import { findTopMatches } from "../_utils/semanticAnalysis";
-import { ExperienceLevel } from "@/types/Enums";
 import { SKILLS } from "@/constants/skills";
 
 export async function POST(request: Request) {

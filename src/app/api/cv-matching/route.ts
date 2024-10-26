@@ -1,5 +1,4 @@
 import { headers } from "../_utils/requestHeaders";
-import { ExperienceLevel } from "@/types/Enums";
 import { extractCvData } from "../_extractors/extractCvData";
 import { supabase } from "@/lib/supabase";
 
@@ -16,10 +15,8 @@ export async function POST(request: Request) {
 
     const extractedFields: {
       name: string;
-      experienceLevel: ExperienceLevel;
       skills: string[];
       industries: string[];
-      role: string;
     } = await extractCvData(fullContent);
 
     const profile = {
