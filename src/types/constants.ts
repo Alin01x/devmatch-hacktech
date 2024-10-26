@@ -1,13 +1,14 @@
 import { ExperienceLevel } from './Enums';
+import { JobDescription } from './JobDescription';
 import { MatchResult } from './MatchResult';
 
 // Sample CV and JobDescription objects (you'll need to replace these with actual data)
-export interface Match extends Omit<MatchResult, 'cv' | 'jobDescription'> {
+export interface CVMatch extends Omit<MatchResult, 'cv' | 'jobDescription'> {
     experienceLevel: ExperienceLevel,
     name: string
 }
 
-export const MATCH_RESULT_SAMPLES: Match[] = [
+export const MATCH_RESULT_SAMPLES: CVMatch[] = [
     {
     name: "Jane Smith",
     experienceLevel: ExperienceLevel.Senior,
@@ -64,3 +65,29 @@ export const MATCH_RESULT_SAMPLES: Match[] = [
     }
   },
 ];
+
+export interface JobMatch extends Omit<JobDescription, 'skills'> {
+    skills: string[]
+}
+
+export const SAMPLE_JOB_MATCH: JobMatch = {
+    id: "1",
+    jobTitle: "Senior Full Stack Developer",
+    experienceLevel: ExperienceLevel.Senior,
+    industry: "Information Technology",
+    detailedDescription: `We are seeking a Senior Full Stack Developer to join our dynamic team. The ideal candidate will have:
+  
+  - 5+ years of experience in full stack development
+  - Proficiency in React, Node.js, and TypeScript
+  - Experience with cloud platforms (preferably AWS)
+  - Strong problem-solving skills and attention to detail
+  - Excellent communication and teamwork abilities
+  
+  Responsibilities include:
+  - Developing and maintaining web applications
+  - Collaborating with cross-functional teams
+  - Mentoring junior developers
+  - Participating in code reviews and architectural decisions`,
+    skills: ["React", 'Node.js', 'TypeScript', 'AWS', 'MongoDB'],
+    createdAt: new Date("2023-04-01")
+  };

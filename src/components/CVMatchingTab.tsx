@@ -8,15 +8,26 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { FileText, Search, Upload } from "lucide-react";
+import { FileText, Search, Upload, Briefcase } from "lucide-react";
 import mammoth from "mammoth";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { SAMPLE_JOB_MATCH } from "@/types/constants";
+import { JobDescription } from "@/types/JobDescription";
 
 const CVMatchingTab = () => {
   const [cvContent, setCvContent] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [matchingJob, setMatchingJob] = useState<JobDescription | null>(null);
+  const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -47,10 +58,10 @@ const CVMatchingTab = () => {
 
   const handleFindMatchingJob = () => {
     setLoading(true);
-    // Add your matching logic here
-    console.log("Finding matching job...");
-    // Simulate processing time
+    // Simulate API call
     setTimeout(() => {
+      setMatchingJob(SAMPLE_JOB_MATCH);
+      setIsResultsOpen(true);
       setLoading(false);
     }, 2000);
   };
@@ -119,30 +130,56 @@ const CVMatchingTab = () => {
             </div>
           )}
 
-          {/* Best Match Section */}
-          <div className="p-4 border rounded-lg dark:bg-gray-800 light:bg-gray-50">
-            <h3 className="font-medium mb-4">Best Matching Job</h3>
-            <div className="space-y-4">
-              <div className="p-4 rounded-md dark:bg-gray-800 light:bg-gray-50">
-                <div className="flex justify-between items-center mb-3 ">
-                  <span className="font-medium">Job Title</span>
-                  <span className="text-sm bg-primary px-2 py-1 rounded">
-                    Score: 92%
-                  </span>
+          {/* Results Dialog */}
+          <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
+            <DialogContent className="md:max-w-[800px]  max-h-screen overflow-y-auto md:pb-6 pb-10">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <Briefcase className="w-6 h-6" />
+                  Best Matching Job
+                </DialogTitle>
+              </DialogHeader>
+              {/* {matchingJob && ( */}
+              {SAMPLE_JOB_MATCH && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold">
+                      {SAMPLE_JOB_MATCH.jobTitle}
+                    </h3>
+                    <Badge variant="secondary" className="text-sm">
+                      {SAMPLE_JOB_MATCH.experienceLevel}
+                    </Badge>
+                  </div>
+                  <div>
+                    <span className="font-medium">Industry:</span>{" "}
+                    <span className="font-normal">
+                      {SAMPLE_JOB_MATCH.industry}
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Required Skills:</h4>
+                    <div className="flex flex-wrap gap-2 font-medium">
+                      {SAMPLE_JOB_MATCH.skills.map((skill) => (
+                        <Badge
+                          key={skill}
+                          variant="outline"
+                          className="border-black dark:border-white dark:text-white"
+                        >
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Job Description:</h4>
+                    <p className="text-sm whitespace-pre-wrap font-normal">
+                      {SAMPLE_JOB_MATCH.detailedDescription}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm">Industry match: 90%</p>
-                  <p className="text-sm">Technical skills match: 95%</p>
-                  <p className="text-sm">Overall description match: 91%</p>
-                </div>
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600">
-                    Match explanation placeholder
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </CardContent>
     </Card>

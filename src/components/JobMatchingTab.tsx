@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
-import { Match, MATCH_RESULT_SAMPLES } from "@/types/constants";
+import { CVMatch, MATCH_RESULT_SAMPLES } from "@/types/constants";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -68,7 +68,7 @@ const JobMatchingTab: React.FC = () => {
   const [skills, setSkills] = useState<Skills>({});
   const [newSkill, setNewSkill] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<CVMatch[]>([]);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const { toast } = useToast();
@@ -376,7 +376,7 @@ const JobMatchingTab: React.FC = () => {
 
           {/* Results Dialog */}
           <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DialogContent className="sm:max-w-[800px]  max-h-screen overflow-y-auto sm:pb-6 pb-10">
+            <DialogContent className="md:max-w-[800px]  max-h-screen overflow-y-auto md:pb-6 pb-10">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold mb-4">
                   Top 5 Matching Candidates
