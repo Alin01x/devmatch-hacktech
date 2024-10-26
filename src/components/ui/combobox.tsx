@@ -19,13 +19,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export interface ComboboxItem {
-  value: string;
-  label: string;
-}
-
 interface ComboboxProps {
-  items: ComboboxItem[];
+  items: string[];
   placeholder: string;
   emptyMessage: string;
   onChange: (value: string) => void;
@@ -61,9 +56,7 @@ export function Combobox({
             className
           )}
         >
-          {value
-            ? items.find((item) => item.value === value)?.label
-            : placeholder}
+          {value || placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -78,8 +71,8 @@ export function Combobox({
             <CommandGroup>
               {items.map((item) => (
                 <CommandItem
-                  key={item.value}
-                  value={item.value}
+                  key={item}
+                  value={item}
                   onSelect={(currentValue) => {
                     onChange(currentValue === value ? "" : currentValue);
                     setOpen(false);
@@ -88,10 +81,10 @@ export function Combobox({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item.value ? "opacity-100" : "opacity-0"
+                      value === item ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {item.label}
+                  {item}
                 </CommandItem>
               ))}
             </CommandGroup>
