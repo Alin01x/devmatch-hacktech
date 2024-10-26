@@ -23,10 +23,12 @@ interface ComboboxProps {
   items: string[];
   placeholder: string;
   emptyMessage: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, isNewItem: boolean) => void;
   value: string;
+  onValueChange?: (value: string) => void;
   className?: string;
   disabled?: boolean;
+  ableToAdd?: boolean;
 }
 
 export function Combobox({
@@ -35,16 +37,67 @@ export function Combobox({
   emptyMessage,
   onChange,
   value,
+  onValueChange,
   className,
   disabled,
+  ableToAdd = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const [buttonWidth, setButtonWidth] = React.useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(-1);
+
+  React.useEffect(() => {
+    if (buttonRef.current) {
+      setButtonWidth(buttonRef.current.offsetWidth);
+    }
+  }, []);
+
+  const filteredItems = items.filter((item) =>
+    item.toLowerCase().includes(value.toLowerCase())
+  );
+
+  const handleSelect = React.useCallback(
+    (currentValue: string) => {
+      const isNewItem = !items.includes(currentValue);
+      onChange(currentValue, isNewItem);
+      setOpen(false);
+      if (onValueChange) {
+        onValueChange(""); // Clear the input after selection
+      }
+      setSelectedIndex(-1);
+    },
+    [onChange, onValueChange, items]
+  );
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (selectedIndex !== -1 && filteredItems[selectedIndex]) {
+          // An item is selected from the list
+          handleSelect(filteredItems[selectedIndex]);
+        } else if (ableToAdd && value.trim() && !items.includes(value.trim())) {
+          // No item is selected, and the input is not empty and not in the list
+          handleSelect(value.trim());
+        }
+      } else if (event.key === "ArrowDown") {
+        setSelectedIndex((prevIndex) =>
+          Math.min(prevIndex + 1, filteredItems.length - 1)
+        );
+      } else if (event.key === "ArrowUp") {
+        setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, -1));
+      }
+    },
+    [ableToAdd, value, items, handleSelect, filteredItems, selectedIndex]
+  );
 
   return (
     <div className={disabled ? "cursor-not-allowed" : ""}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            ref={buttonRef}
             disabled={disabled}
             variant="outline"
             role="combobox"
@@ -65,24 +118,35 @@ export function Combobox({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
+        <PopoverContent
+          className="p-0"
+          align="start"
+          style={{ width: buttonWidth }}
+        >
           <Command className="w-full">
             <CommandInput
               placeholder={`Search ${placeholder.toLowerCase()}...`}
               className="h-9"
               disabled={disabled}
+              value={value}
+              onValueChange={(newValue) => {
+                if (onValueChange) onValueChange(newValue);
+                setSelectedIndex(-1);
+              }}
+              onKeyDown={handleKeyDown}
             />
             <CommandList>
               <CommandEmpty>{emptyMessage}</CommandEmpty>
               <CommandGroup>
-                {items.map((item) => (
+                {filteredItems.map((item, index) => (
                   <CommandItem
                     key={item}
                     value={item}
-                    onSelect={(currentValue) => {
-                      onChange(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                    }}
+                    onSelect={handleSelect}
+                    className={cn(
+                      selectedIndex === index &&
+                        "bg-accent text-accent-foreground"
+                    )}
                   >
                     <Check
                       className={cn(
