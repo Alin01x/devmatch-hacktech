@@ -24,3 +24,15 @@ Provide a score from between 0 and 100 and detailed reasoning. Return response a
   "score": number,
   "reasoning": string
 }`;
+
+export const BEST_MATCH_REASONING_PROMPT = `You are an expert technical recruiter. Analyze the match between a job description and CV, focusing on:
+1. Technical skill alignment and domain knowledge
+2. Industry experience relevance
+3. Overall qualification fit
+
+Provide a detailed reasoning of why this CV is the best match for the job description.
+
+Return response as JSON with format:
+{
+  "reasoning": string
+}`;

@@ -2,12 +2,15 @@ import { headers } from "../_utils/requestHeaders";
 import { JobDescription, Skills } from "../../../types/JobDescription";
 import { supabase } from "@/lib/supabase";
 import { SKILLS } from "@/constants/skills";
-import { CV } from "@/types/CV";
+
 import { IndustryAnalysisService } from "../_services/IndustryAnalysisService";
 import { MatchingCV } from "@/types/MatchResult";
 
 import { SkillAnalysisService } from "../_services/SkillAnalysisService";
 import { OverallAnalysisService } from "../_services/OverallAnalysisService";
+import { getFinalMatchingScore } from "../_utils/getFinalMatchingScore";
+import { sendGPTRequest } from "../_utils/openAI";
+import { BEST_MATCH_REASONING_PROMPT } from "../_utils/prompts";
 
 export async function POST(request: Request) {
   try {
@@ -116,8 +119,6 @@ export const handleJobMatching = async (
       overallAnalysis: {
         aiScore: 0,
         aiReasoning: "",
-        naturalLanguageScore: 0,
-        naturalLanguageReasoning: "",
       },
       finalScore: 0,
       bestMatchReasoning: "",
@@ -133,17 +134,12 @@ export const handleJobMatching = async (
     return weightedScoreB - weightedScoreA;
   });
 
-  console.log(`Found ${matchingCVs.length} potential CVs by Skill Overlap...`);
-
   // Let's narrow down by only analyzing further the top 10 CVs
   matchingCVs = matchingCVs.slice(0, 10);
 
-  // Let's run the overall analysis on the top 10 CVs in parallel
-
-  // Perform separate analyses
   matchingCVs = await Promise.all(
     matchingCVs.map(async (matchingCV) => {
-      // Get overall analysis (OpenAI 85% + semantic 15%)
+      // Get overall analysis (OpenAI)
       const overallAnalysis = await overallAnalysisService.analyzeMatch(
         matchingCV.cv,
         jobDescription
@@ -153,10 +149,8 @@ export const handleJobMatching = async (
         ...matchingCV,
         overallScore: overallAnalysis.score,
         overallAnalysis: {
-          aiScore: overallAnalysis.aiScore / 100,
-          aiReasoning: overallAnalysis.aiReasoning,
-          naturalLanguageScore: overallAnalysis.naturalLanguageScore / 100,
-          naturalLanguageReasoning: overallAnalysis.naturalLanguageReasoning,
+          aiScore: overallAnalysis.score / 100,
+          aiReasoning: overallAnalysis.reasoning,
         },
         finalScore: 0,
         bestMatchReasoning: "",
@@ -164,16 +158,29 @@ export const handleJobMatching = async (
     })
   );
 
-  const matchingCVswithoutCV = matchingCVs.map((matching) => {
-    const { cv, ...rest } = matching;
-    return rest;
-  });
-
-  console.log("Matching CVs", matchingCVswithoutCV);
   // Calculate final score
   // Industry Knowledge Criteria (10%)
   // Technical Skills Criteria (30%)
   // Job Description and CV Matching (60%)
+
+  matchingCVs.forEach((cv) => {
+    cv.finalScore = getFinalMatchingScore(
+      cv.industryScore,
+      cv.technicalScore,
+      cv.overallScore
+    );
+  });
+
+  // Sort by final score
+  matchingCVs.sort((a, b) => b.finalScore - a.finalScore);
+
+  // Get best match reasoning
+  const bestMatchReasoning = await sendGPTRequest({
+    systemPrompt: BEST_MATCH_REASONING_PROMPT,
+    userRequest: matchingCVs[0].cv.full_content,
+  });
+
+  matchingCVs[0].bestMatchReasoning = bestMatchReasoning;
 
   return new Response(JSON.stringify({ success: true, data: matchingCVs }), {
     status: 200,
