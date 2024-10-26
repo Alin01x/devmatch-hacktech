@@ -23,7 +23,6 @@ export async function POST(request: Request) {
       name: extractedFields.name,
       skills: extractedFields.skills,
       industries: extractedFields.industries,
-      role: "",
       full_content: fullContent,
     };
 

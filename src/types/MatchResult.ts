@@ -1,6 +1,12 @@
 import { CV } from "./CV";
 import { JobDescription } from "./JobDescription";
 
+export type MatchingCV = {
+  cv: CV | null;
+  industryScore: number;
+  industryReasoning: string;
+};
+
 // Types for matching scores
 export interface MatchScore {
   industryKnowledgeScore: number; // 0-100
