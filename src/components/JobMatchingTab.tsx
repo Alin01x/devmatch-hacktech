@@ -45,7 +45,7 @@ import {
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
 import { CVMatch, MATCH_RESULT_SAMPLES } from "@/types/constants";
-import { SKILLS } from "@/constants/skills";
+import { SKILLS as SKILLS_OPTIONS } from "@/constants/skills";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -71,7 +71,6 @@ const JobMatchingTab: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [matches, setMatches] = useState<CVMatch[]>([]);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
-  const [skillInput, setSkillInput] = useState<string>("");
 
   const { toast } = useToast();
   const [errors, setErrors] = useState<{
@@ -86,21 +85,6 @@ const JobMatchingTab: React.FC = () => {
     skills: "",
   });
 
-  const handleAddSkill = (): void => {
-    const trimmedSkill = newSkill.trim();
-
-    if (!skills.hasOwnProperty(trimmedSkill)) {
-      // If it's the first skill, set its weight to 100
-      const weight = Object.keys(skills).length === 0 ? 100 : 0;
-      setSkills({
-        ...skills,
-        [trimmedSkill]: weight,
-      });
-    }
-
-    setNewSkill("");
-  };
-
   const handleRemoveSkill = (skillToRemove: string): void => {
     const auxSkills = { ...skills };
     delete auxSkills[skillToRemove];
@@ -113,7 +97,7 @@ const JobMatchingTab: React.FC = () => {
     setSkills(auxSkills);
   };
 
-  const handleSkillChange = (newSkill: string, isNewItem: boolean): void => {
+  const handleAddSkill = (newSkill: string): void => {
     if (newSkill.trim() && !skills.hasOwnProperty(newSkill)) {
       const weight = Object.keys(skills).length === 0 ? 100 : 0;
       setSkills({
@@ -121,7 +105,7 @@ const JobMatchingTab: React.FC = () => {
         [newSkill]: weight,
       });
     }
-    setSkillInput(""); // Clear the input after adding or selecting
+    setNewSkill(""); // Clear the input after adding or selecting
   };
 
   const validate = () => {
@@ -228,7 +212,7 @@ const JobMatchingTab: React.FC = () => {
               </div>
               <div>
                 <Combobox
-                  items={INDUSTRIES}
+                  options={INDUSTRIES}
                   placeholder="Select industry..."
                   emptyMessage="No industry found."
                   className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -290,15 +274,16 @@ const JobMatchingTab: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <Combobox
-                  items={SKILLS}
+                  options={SKILLS_OPTIONS}
+                  items={skills}
                   placeholder="Select/Add skill..."
                   emptyMessage="No skill found. Press enter to add it."
                   className="w-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  onValueChange={setSkillInput}
-                  onChange={handleSkillChange}
+                  onValueChange={setNewSkill}
+                  onChange={handleAddSkill}
                   disabled={isLoading}
-                  value={skillInput}
-                  ableToAdd={true}
+                  value={newSkill}
+                  ableToAdd
                 />
               </div>
 

@@ -18,12 +18,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Skills } from "@/types/JobDescription";
 
 interface ComboboxProps {
-  items: string[];
+  options: string[];
+  items?: Skills;
   placeholder: string;
   emptyMessage: string;
-  onChange: (value: string, isNewItem: boolean) => void;
+  onChange: (value: string) => void;
   value: string;
   onValueChange?: (value: string) => void;
   className?: string;
@@ -32,6 +34,7 @@ interface ComboboxProps {
 }
 
 export function Combobox({
+  options,
   items,
   placeholder,
   emptyMessage,
@@ -45,7 +48,6 @@ export function Combobox({
   const [open, setOpen] = React.useState(false);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const [buttonWidth, setButtonWidth] = React.useState<number>(0);
-  const [selectedIndex, setSelectedIndex] = React.useState<number>(-1);
 
   React.useEffect(() => {
     if (buttonRef.current) {
@@ -53,43 +55,39 @@ export function Combobox({
     }
   }, []);
 
-  const filteredItems = items.filter((item) =>
-    item.toLowerCase().includes(value.toLowerCase())
-  );
+  const filteredItems = React.useMemo(() => {
+    return options.filter((item) =>
+      item.toLowerCase().includes(value.toLowerCase())
+    );
+  }, [items, value]);
 
   const handleSelect = React.useCallback(
     (currentValue: string) => {
-      const isNewItem = !items.includes(currentValue);
-      onChange(currentValue, isNewItem);
-      setOpen(false);
-      if (onValueChange) {
-        onValueChange(""); // Clear the input after selection
+      let isNewItem = false;
+      if (ableToAdd) {
+        isNewItem =
+          (items && !Object.keys(items).includes(currentValue)) || false;
+      } else {
+        isNewItem = true;
       }
-      setSelectedIndex(-1);
+      if (isNewItem) {
+        onChange(currentValue);
+        setOpen(false);
+      }
     },
-    [onChange, onValueChange, items]
+    [onChange, filteredItems]
   );
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
-        event.preventDefault();
-        if (selectedIndex !== -1 && filteredItems[selectedIndex]) {
-          // An item is selected from the list
-          handleSelect(filteredItems[selectedIndex]);
-        } else if (ableToAdd && value.trim() && !items.includes(value.trim())) {
-          // No item is selected, and the input is not empty and not in the list
-          handleSelect(value.trim());
+        if (ableToAdd && value.trim() && filteredItems.length === 0) {
+          onChange(value);
+          setOpen(false);
         }
-      } else if (event.key === "ArrowDown") {
-        setSelectedIndex((prevIndex) =>
-          Math.min(prevIndex + 1, filteredItems.length - 1)
-        );
-      } else if (event.key === "ArrowUp") {
-        setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, -1));
       }
     },
-    [ableToAdd, value, items, handleSelect, filteredItems, selectedIndex]
+    [ableToAdd, value, filteredItems, handleSelect]
   );
 
   return (
@@ -128,26 +126,18 @@ export function Combobox({
               placeholder={`Search ${placeholder.toLowerCase()}...`}
               className="h-9"
               disabled={disabled}
-              value={value}
               onValueChange={(newValue) => {
-                if (onValueChange) onValueChange(newValue);
-                setSelectedIndex(-1);
+                if (onValueChange) {
+                  onValueChange(newValue);
+                }
               }}
               onKeyDown={handleKeyDown}
             />
             <CommandList>
               <CommandEmpty>{emptyMessage}</CommandEmpty>
               <CommandGroup>
-                {filteredItems.map((item, index) => (
-                  <CommandItem
-                    key={item}
-                    value={item}
-                    onSelect={handleSelect}
-                    className={cn(
-                      selectedIndex === index &&
-                        "bg-accent text-accent-foreground"
-                    )}
-                  >
+                {options.map((item) => (
+                  <CommandItem key={item} value={item} onSelect={handleSelect}>
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
