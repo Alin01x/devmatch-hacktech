@@ -21,13 +21,36 @@ import {
 } from "@/components/ui/dialog";
 import { JobMatch, SAMPLE_JOB_MATCH } from "@/types/constants";
 import { toast } from "@/hooks/use-toast";
+import {
+  headingsPlugin,
+  listsPlugin,
+  quotePlugin,
+  frontmatterPlugin,
+  diffSourcePlugin,
+} from "@mdxeditor/editor";
+import "@mdxeditor/editor/style.css";
+import { Skeleton } from "./ui/skeleton";
+import dynamic from "next/dynamic";
+
+// Dynamically import MDXEditor with SSR disabled
+const MDXEditor = dynamic(
+  () => import("@mdxeditor/editor").then((mod) => mod.MDXEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[420px] space-y-2 p-4">
+        <Skeleton className="h-[400px] w-full animate-pulse" />
+      </div>
+    ),
+  }
+);
 
 const CVMatchingTab = () => {
   const [cvContent, setCvContent] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [matchingJob, setMatchingJob] = useState<JobMatch | null>(null);
-  const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [isResultsOpen, setIsResultsOpen] = useState(true);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -185,9 +208,19 @@ const CVMatchingTab = () => {
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">Job Description:</h4>
-                    <p className="text-sm whitespace-pre-wrap font-normal">
-                      {SAMPLE_JOB_MATCH.detailed_description}
-                    </p>
+                    <MDXEditor
+                      markdown={SAMPLE_JOB_MATCH.detailed_description}
+                      readOnly
+                      contentEditableClassName="prose max-w-none dark:text-white"
+                      className="bg-gray-100 dark:bg-gray-800 rounded-md dark:text-white"
+                      plugins={[
+                        listsPlugin(),
+                        quotePlugin(),
+                        headingsPlugin(),
+                        frontmatterPlugin(),
+                        diffSourcePlugin(),
+                      ]}
+                    />
                   </div>
                 </div>
               )}
