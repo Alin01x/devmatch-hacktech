@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-
 import {
   Card,
   CardHeader,
@@ -10,7 +9,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Briefcase, Plus, X, Upload, Loader2 } from "lucide-react";
+import { Briefcase, Plus, X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -187,8 +186,12 @@ const JobMatchingTab = () => {
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
                 />
-                <Button onClick={handleAddSkill} className="whitespace-nowrap">
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button
+                  onClick={handleAddSkill}
+                  className="whitespace-nowrap"
+                  variant="outline"
+                >
+                  <Plus className="w-4 h-4" />
                   Add Skill
                 </Button>
               </div>
@@ -226,16 +229,18 @@ const JobMatchingTab = () => {
             </div>
           </div>
 
-          <Button className="w-full" onClick={handleSubmit} disabled={loading}>
-            {loading ? (
-              "Processing..."
-            ) : (
-              <>
-                <Upload className="w-4 h-4 mr-2" />
-                Find Matching Candidates
-              </>
-            )}
-          </Button>
+          <div className="flex justify-end">
+            <Button onClick={handleSubmit} disabled={loading}>
+              {loading ? (
+                "Finding matching candidates..."
+              ) : (
+                <>
+                  <Search className="w-4 h-4 mr-2" />
+                  Find Matching Candidates
+                </>
+              )}
+            </Button>
+          </div>
 
           {/* Results Section */}
           {matches.length > 0 && (
