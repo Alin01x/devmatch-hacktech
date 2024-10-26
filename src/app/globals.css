@@ -80,7 +80,7 @@ body {
 }
 
 .editorWrapper .mdxeditor-toolbar {
-  @apply bg-primary rounded-b-none rounded-t-lg;
+  @apply bg-primary rounded-b-none rounded-t-md relative;
 }
 .editorWrapper .mdxeditor-toolbar svg {
   @apply text-[#0d0d0d] dark:text-white;

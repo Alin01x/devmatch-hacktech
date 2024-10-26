@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
+
 import {
   Card,
   CardHeader,
@@ -8,14 +10,13 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Briefcase, Plus, X, Upload } from "lucide-react";
+import { Briefcase, Plus, X, Upload, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import "@mdxeditor/editor/style.css";
 import {
-  MDXEditor,
   UndoRedo,
   toolbarPlugin,
   BoldItalicUnderlineToggles,
@@ -25,16 +26,24 @@ import {
   frontmatterPlugin,
   diffSourcePlugin,
 } from "@mdxeditor/editor";
-import { Combobox, ComboboxItem } from "@/components/ui/combobox";
+import { Combobox } from "@/components/ui/combobox";
+import { INDUSTRIES } from "@/constants/industries";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const industries: ComboboxItem[] = [
-  { value: "technology", label: "Technology" },
-  { value: "healthcare", label: "Healthcare" },
-  { value: "finance", label: "Finance" },
-  { value: "education", label: "Education" },
-  { value: "retail", label: "Retail" },
-  // Add more industries as needed
-];
+// Dynamically import MDXEditor with SSR disabled
+const MDXEditor = dynamic(
+  () => import("@mdxeditor/editor").then((mod) => mod.MDXEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[420px] space-y-2 p-4">
+        <Skeleton className="h-4 w-[260px] animate-pulse" />
+        <Skeleton className="h-4 w-[260px] animate-pulse" />
+        <Skeleton className="h-[366px] w-full animate-pulse" />
+      </div>
+    ),
+  }
+);
 
 const JobMatchingTab = () => {
   const [jobTitle, setJobTitle] = useState("");
@@ -135,14 +144,14 @@ const JobMatchingTab = () => {
                 onChange={(e) => setJobTitle(e.target.value)}
               />
               <Combobox
-                items={industries}
+                items={INDUSTRIES}
                 placeholder="Select industry..."
                 emptyMessage="No industry found."
                 className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 onChange={setIndustry}
                 value={industry}
               />
-              <div className="editorWrapper border border-input rounded-lg">
+              <div className="editorWrapper border border-input rounded-lg h-[462px]">
                 <MDXEditor
                   onChange={handleJobDescriptionChange}
                   markdown={jobDescription}
@@ -161,7 +170,7 @@ const JobMatchingTab = () => {
                     frontmatterPlugin(),
                     diffSourcePlugin(),
                   ]}
-                  contentEditableClassName="prose dark:prose-invert max-w-none min-h-[400px]"
+                  contentEditableClassName="prose text-sm dark:prose-invert max-w-none h-[420px] overflow-y-auto"
                 />
               </div>
             </div>
@@ -176,7 +185,7 @@ const JobMatchingTab = () => {
                   placeholder="Add Technical Skill"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
                 />
                 <Button onClick={handleAddSkill} className="whitespace-nowrap">
                   <Plus className="w-4 h-4 mr-2" />
