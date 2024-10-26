@@ -216,6 +216,9 @@ const JobMatchingTab: React.FC = () => {
     return skills.reduce((sum, skill) => sum + skill.weight, 0);
   };
 
+  const totalWeight = calculateTotalWeight();
+  const isWeightValid = skills.length === 0 || totalWeight === 100;
+
   return (
     <Card>
       <CardHeader>
@@ -297,24 +300,36 @@ const JobMatchingTab: React.FC = () => {
 
           {/* Technical Skills Section */}
           <div className="p-4 border rounded-lg dark:bg-gray-800">
-            <div className="flex justify-between items-center mb-2">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center">
                 <h3 className="font-medium">Technical Skills</h3>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Info className="w-4 h-4 text-black dark:text-white cursor-pointer" />
+                      <Info className="size-4 text-black dark:text-white cursor-pointer ml-2" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>The total of the skills should be 100%</p>
+                      <p>Example: React, Python, SQL</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <span className="text-sm">
-                Total Weight: {calculateTotalWeight()}%
+              <span className="text-sm font-medium mb-2">
+                Total Weight:{" "}
+                <span
+                  className={
+                    skills.length === 0
+                      ? "text-black dark:text-white"
+                      : isWeightValid
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }
+                >
+                  {totalWeight}%
+                </span>
               </span>
             </div>
+
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Input
@@ -339,7 +354,7 @@ const JobMatchingTab: React.FC = () => {
                     key={skill.name}
                     className="flex items-center gap-4 p-2 bg-gray-50 dark:bg-gray-800 rounded"
                   >
-                    <Badge className="flex-1 justify-center dark:text-white">
+                    <Badge className="justify-center dark:text-white w-48 block text-center py-1 bg-slate-">
                       {skill.name}
                     </Badge>
                     <div className="flex-1">
@@ -353,7 +368,7 @@ const JobMatchingTab: React.FC = () => {
                         step={1}
                       />
                     </div>
-                    <span className="w-12 text-sm">{skill.weight}%</span>
+                    <span className="text-sm">{skill.weight}%</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -375,7 +390,7 @@ const JobMatchingTab: React.FC = () => {
           <Button
             className="w-full dark:text-white"
             type="submit"
-            disabled={isSubmitting || loading}
+            disabled={isSubmitting || loading || !isWeightValid}
           >
             {isSubmitting || loading ? (
               <>
