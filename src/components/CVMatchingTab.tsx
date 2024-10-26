@@ -31,13 +31,13 @@ const CVMatchingTab = () => {
           </div>
 
           {/* Best Match Section */}
-          <div className="p-4 border rounded-lg">
+          <div className="p-4 border rounded-lg dark:bg-gray-800 light:bg-gray-50">
             <h3 className="font-medium mb-4">Best Matching Job</h3>
             <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-md">
-                <div className="flex justify-between items-center mb-3">
+              <div className="p-4 rounded-md dark:bg-gray-800 light:bg-gray-50">
+                <div className="flex justify-between items-center mb-3 ">
                   <span className="font-medium">Job Title</span>
-                  <span className="text-sm bg-blue-100 px-2 py-1 rounded">
+                  <span className="text-sm bg-primary px-2 py-1 rounded">
                     Score: 92%
                   </span>
                 </div>
