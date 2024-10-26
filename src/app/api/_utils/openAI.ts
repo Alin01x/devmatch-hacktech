@@ -17,7 +17,7 @@ export async function sendGPTRequest({
   systemPrompt = "You are a helpful assistant.",
   model = "gpt-4o-mini",
   temperature = 0.7,
-  maxTokens = 250,
+  maxTokens = 8048,
 }: GPTRequestOptions) {
   try {
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
