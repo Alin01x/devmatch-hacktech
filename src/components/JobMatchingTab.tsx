@@ -44,8 +44,14 @@ import {
 } from "@/components/ui/dialog";
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
-import { CVMatch, MATCH_RESULT_SAMPLES } from "@/types/constants";
+import {
+  CVMatch,
+  MATCH_RESULT_SAMPLES,
+  NEW_MATCH_RESULT_SAMPLE_CV,
+} from "@/types/constants";
 import { SKILLS as SKILLS_OPTIONS } from "@/constants/skills";
+import { MatchingCV } from "@/types/MatchResult";
+import MatchResultDialog from "@/components/MatchResultDialog";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -70,7 +76,7 @@ const JobMatchingTab: React.FC = () => {
   const [newSkill, setNewSkill] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [matches, setMatches] = useState<CVMatch[]>([]);
-  const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [isResultsOpen, setIsResultsOpen] = useState(true);
 
   const { toast } = useToast();
   const [errors, setErrors] = useState<{
@@ -367,62 +373,13 @@ const JobMatchingTab: React.FC = () => {
           </div>
 
           {/* Results Dialog */}
-          <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DialogContent className="md:max-w-[800px]  max-h-screen overflow-y-auto md:pb-6 pb-10">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold mb-4">
-                  Top 5 Matching Candidates
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-2 mt-4 overflow-y-auto">
-                {MATCH_RESULT_SAMPLES.map((match, index) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg transition-all duration-200 ${
-                      index === 0
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-lg dark:text-white">
-                        {match.name}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={index === 0 ? "secondary" : "outline"}
-                          className={`w-16 justify-center ${
-                            index === 0
-                              ? "bg-primary-foreground text-primary text-white dark:bg-white dark:text-black"
-                              : "border border-black dark:border-white"
-                          }`}
-                        >
-                          {match.score.finalScore}%
-                        </Badge>
-                      </div>
-                    </div>
-                    <p className="text-sm py-2 dark:text-white">
-                      {match.score.matchExplanation}
-                    </p>
-                    <div className="flex items-center justify-between gap-2 dark:text-white">
-                      <div className="text-xs">
-                        <span className="font-medium">Industry:</span>{" "}
-                        {match.score.industryKnowledgeScore}%
-                      </div>
-                      <div className="text-xs">
-                        <span className="font-medium">Technical:</span>{" "}
-                        {match.score.technicalSkillsScore}%
-                      </div>
-                      <div className="text-xs">
-                        <span className="font-medium">Job Match:</span>{" "}
-                        {match.score.jobDescriptionMatchScore}%
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </DialogContent>
-          </Dialog>
+          <MatchResultDialog
+            isOpen={isResultsOpen}
+            onOpenChange={setIsResultsOpen}
+            mode="cv"
+            data={matches.length > 0 ? matches : [NEW_MATCH_RESULT_SAMPLE_CV]}
+            title="Top 5 Matching Candidates"
+          />
         </div>
       </CardContent>
     </Card>
