@@ -23,4 +23,8 @@ export type MatchingCV = {
     naturalLanguageScore: number;
     naturalLanguageReasoning: string;
   };
+
+  // Final score and best match reasoning
+  finalScore: number;
+  bestMatchReasoning: string;
 };
