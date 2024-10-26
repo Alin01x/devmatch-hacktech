@@ -1,24 +1,26 @@
 import { CV } from "./CV";
-import { JobDescription } from "./JobDescription";
-
 export type MatchingCV = {
-  cv: CV | null;
+  cv: CV;
+
+  // Industry criteria
   industryScore: number;
   industryReasoning: string;
+
+  // Technical Skills criteria
+  technicalScore: number;
+  technicalReasoning: string;
+  technicalSkillsMatched: string[];
+  technicalSkillsMissing: string[];
+  technicalDetailedScoring: {
+    [skill: string]: { present: boolean; weight: number; contribution: number };
+  };
+
+  // Overall criteria (basically our beloved GPT + a bit of NLP so we don't give him full power yet)
+  overallScore: number;
+  overallAnalysis: {
+    aiScore: number;
+    aiReasoning: string;
+    naturalLanguageScore: number;
+    naturalLanguageReasoning: string;
+  };
 };
-
-// Types for matching scores
-export interface MatchScore {
-  industryKnowledgeScore: number; // 0-100
-  technicalSkillsScore: number; // 0-100
-  jobDescriptionMatchScore: number; // 0-100
-  finalScore: number; // 0-100
-  matchExplanation: string; // Explanation of why this match was made
-}
-
-// Type for the matching result
-export interface MatchResult {
-  cv: CV;
-  jobDescription: JobDescription;
-  score: MatchScore;
-}
