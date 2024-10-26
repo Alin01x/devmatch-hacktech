@@ -2,12 +2,12 @@ import { ExperienceLevel } from './Enums';
 import { MatchResult } from './MatchResult';
 
 // Sample CV and JobDescription objects (you'll need to replace these with actual data)
-interface Data extends Omit<MatchResult, 'cv' | 'jobDescription'> {
+export interface Match extends Omit<MatchResult, 'cv' | 'jobDescription'> {
     experienceLevel: ExperienceLevel,
     name: string
 }
 
-export const MATCH_RESULT_SAMPLES: Data[] = [
+export const MATCH_RESULT_SAMPLES: Match[] = [
     {
     name: "Jane Smith",
     experienceLevel: ExperienceLevel.Senior,

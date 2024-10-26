@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
-import { MATCH_RESULT_SAMPLES } from "@/types/constants";
+import { Match, MATCH_RESULT_SAMPLES } from "@/types/constants";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -60,13 +60,6 @@ const MDXEditor = dynamic(
     ),
   }
 );
-
-// Define the Match type
-type Match = {
-  name: string;
-  score: number;
-  explanation: string;
-};
 
 const JobMatchingTab: React.FC = () => {
   const [jobTitle, setJobTitle] = useState<string>("");
