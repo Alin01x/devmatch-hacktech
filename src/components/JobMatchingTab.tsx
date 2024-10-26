@@ -11,16 +11,19 @@ import {
 import { Briefcase, Plus, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import "@mdxeditor/editor/style.css";
 import {
   MDXEditor,
+  UndoRedo,
+  toolbarPlugin,
+  BoldItalicUnderlineToggles,
   headingsPlugin,
   listsPlugin,
   quotePlugin,
-  thematicBreakPlugin,
+  frontmatterPlugin,
+  diffSourcePlugin,
 } from "@mdxeditor/editor";
 
 const JobMatchingTab = () => {
@@ -55,6 +58,10 @@ const JobMatchingTab = () => {
       ...skillWeights,
       [skill]: value[0],
     });
+  };
+
+  const handleJobDescriptionChange = (content: string) => {
+    setJobDescription(content);
   };
 
   const handleSubmit = async () => {
@@ -109,7 +116,7 @@ const JobMatchingTab = () => {
       <CardContent>
         <div className="space-y-6">
           {/* Job Description Input Section */}
-          <div className="p-4 border rounded-lg dark:bg-gray-800 light:bg-gray-50">
+          <div className="p-4 border rounded-lg dark:bg-gray-800 bg-gray-50">
             <h3 className="font-medium mb-2">Job Details</h3>
             <div className="space-y-4">
               <Input
@@ -122,12 +129,28 @@ const JobMatchingTab = () => {
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
               />
-              <Textarea
-                placeholder="Detailed Job Description"
-                className="h-32"
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-              />
+              <div className="editorWrapper border border-input rounded-lg">
+                <MDXEditor
+                  onChange={handleJobDescriptionChange}
+                  markdown={jobDescription}
+                  plugins={[
+                    toolbarPlugin({
+                      toolbarContents: () => (
+                        <>
+                          <UndoRedo />
+                          <BoldItalicUnderlineToggles />
+                        </>
+                      ),
+                    }),
+                    listsPlugin(),
+                    quotePlugin(),
+                    headingsPlugin(),
+                    frontmatterPlugin(),
+                    diffSourcePlugin(),
+                  ]}
+                  contentEditableClassName="prose dark:prose-invert max-w-none min-h-[400px]"
+                />
+              </div>
             </div>
           </div>
 
