@@ -12,21 +12,21 @@ export const extractJobExperienceLevel = async (
   jobTitle: string,
   detailedDescription: string
 ): Promise<ExperienceLevel> => {
-  // Extract the experience level from the job title
-  // by checking if it matches any of the keys in the ExperienceLevelMapping
-
-  const experienceLevel = Object.keys(ExperienceLevelMapping).find((level) =>
-    ExperienceLevelMapping[level as ExperienceLevel].some((keyword) =>
-      jobTitle.toLowerCase().includes(keyword)
-    )
-  ) as ExperienceLevel | undefined;
-
-  if (experienceLevel) return experienceLevel;
-
-  // Fallback - If no experience level is found in the job title
-  // Extract the experience level from the detailed description using GPT
-
   try {
+    // Extract the experience level from the job title
+    // by checking if it matches any of the keys in the ExperienceLevelMapping
+
+    const experienceLevel = Object.keys(ExperienceLevelMapping).find((level) =>
+      ExperienceLevelMapping[level as ExperienceLevel].some((keyword) =>
+        jobTitle.toLowerCase().includes(keyword)
+      )
+    ) as ExperienceLevel | undefined;
+
+    if (experienceLevel) return experienceLevel;
+
+    // Fallback - If no experience level is found in the job title
+    // Extract the experience level from the detailed description using GPT
+
     const gptResponse: {
       experienceLevel: ExperienceLevel;
     } = await sendGPTRequest({
@@ -41,12 +41,13 @@ export const extractJobExperienceLevel = async (
     ) {
       return extractedLevel as ExperienceLevel;
     }
+
+    // Default fallback if GPT fails or returns an invalid response
+    // TODO:  can be handled by having an "unknown" experience level
+    //        for which we ask the user to manually set the experience level in the UI
+    return "junior" as ExperienceLevel;
   } catch (error) {
     console.error("Error extracting experience level:", error);
+    return "junior" as ExperienceLevel;
   }
-
-  // Default fallback if GPT fails or returns an invalid response
-  // TODO:  can be handled by having an "unknown" experience level
-  //        for which we ask the user to manually set the experience level in the UI
-  return "mid" as ExperienceLevel;
 };
