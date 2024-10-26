@@ -18,6 +18,7 @@ export const extractCvData = async (
     } = await sendGPTRequest({
       userRequest: `CV: ${content}`,
       systemPrompt: EXTRACT_CV_DATA_PROMPT,
+      temperature: 0.5,
     });
 
     return {
