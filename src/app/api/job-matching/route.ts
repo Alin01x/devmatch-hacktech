@@ -8,7 +8,7 @@ import { MatchingCV } from "@/types/MatchResult";
 
 import { SkillAnalysisService } from "../_services/SkillAnalysisService";
 import { OverallAnalysisService } from "../_services/OverallAnalysisService";
- 
+
 export async function POST(request: Request) {
   try {
     const { job_title, industry, detailed_description, skills } =
@@ -152,12 +152,14 @@ export const handleJobMatching = async (
       return {
         ...matchingCV,
         overallScore: overallAnalysis.score,
-        overallMatch: {
+        overallAnalysis: {
           aiScore: overallAnalysis.aiScore / 100,
           aiReasoning: overallAnalysis.aiReasoning,
           naturalLanguageScore: overallAnalysis.naturalLanguageScore / 100,
           naturalLanguageReasoning: overallAnalysis.naturalLanguageReasoning,
         },
+        finalScore: 0,
+        bestMatchReasoning: "",
       };
     })
   );
