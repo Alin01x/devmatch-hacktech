@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto_Slab, Jersey_15 } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
