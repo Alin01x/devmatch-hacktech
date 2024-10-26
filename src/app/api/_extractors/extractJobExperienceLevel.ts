@@ -14,6 +14,7 @@ export const extractJobExperienceLevel = async (
 ): Promise<ExperienceLevel> => {
   // Extract the experience level from the job title
   // by checking if it matches any of the keys in the ExperienceLevelMapping
+
   const experienceLevel = Object.keys(ExperienceLevelMapping).find((level) =>
     ExperienceLevelMapping[level as ExperienceLevel].some((keyword) =>
       jobTitle.toLowerCase().includes(keyword)
@@ -31,7 +32,6 @@ export const extractJobExperienceLevel = async (
     } = await sendGPTRequest({
       userRequest: `Job Description: ${detailedDescription}`,
       systemPrompt: EXTRACT_JOB_EXPERIENCE_LEVEL_PROMPT,
-      model: "gpt-4o-mini",
     });
 
     const extractedLevel = gptResponse.experienceLevel.toLowerCase();
