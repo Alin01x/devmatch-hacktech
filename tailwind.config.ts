@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animatePlugin from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
@@ -10,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-		jersey15: ["var(--font-jersey15)"],
+        jersey15: ["var(--font-jersey15)"],
       },
       colors: {
         background: "hsl(var(--background))",
@@ -61,6 +62,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animatePlugin],
 };
+
 export default config;
