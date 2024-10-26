@@ -22,6 +22,8 @@ export const extractJobExperienceLevel = async (
       )
     ) as ExperienceLevel | undefined;
 
+    console.log("Experience Level found by Keyword", experienceLevel);
+
     if (experienceLevel) return experienceLevel;
 
     // Fallback - If no experience level is found in the job title
