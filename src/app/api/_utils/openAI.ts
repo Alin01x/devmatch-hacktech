@@ -5,7 +5,7 @@ const openai = new OpenAI({
 });
 
 interface GPTRequestOptions {
-  userRequest: string | object;
+  userRequest: string;
   systemPrompt?: string;
   model?: string;
   temperature?: number;
@@ -18,16 +18,13 @@ export async function sendGPTRequest({
   model = "gpt-4o-mini",
   temperature = 0.7,
   maxTokens = 250,
-}: GPTRequestOptions): Promise<string> {
+}: GPTRequestOptions) {
   try {
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
       { role: "system", content: systemPrompt },
       {
         role: "user",
-        content:
-          typeof userRequest === "string"
-            ? userRequest
-            : JSON.stringify(userRequest),
+        content: userRequest,
       },
     ];
 
@@ -36,9 +33,10 @@ export async function sendGPTRequest({
       messages: messages,
       temperature: temperature,
       max_tokens: maxTokens,
+      response_format: { type: "json_object" },
     });
 
-    return response.choices[0].message.content || "";
+    return JSON.parse(response.choices[0].message.content || "");
   } catch (error) {
     console.error("Error in GPT request:", error);
     throw new Error("Failed to process GPT request");

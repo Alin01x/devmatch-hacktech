@@ -1,5 +1,6 @@
 import { sendGPTRequest } from "../_utils/openAI";
 import { ExperienceLevel } from "@/types/Enums";
+import { EXTRACT_JOB_EXPERIENCE_LEVEL_PROMPT } from "../_utils/prompts";
 
 const ExperienceLevelMapping: Record<ExperienceLevel, string[]> = {
   junior: ["junior", "entry level", "entry-level", "beginner", "trainee"],
@@ -23,21 +24,21 @@ export const extractJobExperienceLevel = async (
 
   // Fallback - If no experience level is found in the job title
   // Extract the experience level from the detailed description using GPT
-  const systemPrompt =
-    "You are an AI assistant that analyzes job descriptions and determines the experience level required.";
-  const userRequest = `Based on the following job description, determine the experience level required. Respond with only one of these options: junior, mid, or senior.\n\nJob Description: ${detailedDescription}`;
 
   try {
-    const gptResponse = await sendGPTRequest({
-      userRequest,
-      systemPrompt,
+    const gptResponse: {
+      experienceLevel: ExperienceLevel;
+    } = await sendGPTRequest({
+      userRequest: `Job Description: ${detailedDescription}`,
+      systemPrompt: EXTRACT_JOB_EXPERIENCE_LEVEL_PROMPT,
       model: "gpt-4o-mini",
-      temperature: 0.3,
-      maxTokens: 10,
     });
 
-    const extractedLevel = gptResponse.trim().toLowerCase();
-    if (["junior", "mid", "senior"].includes(extractedLevel)) {
+    const extractedLevel = gptResponse.experienceLevel.toLowerCase();
+
+    if (
+      Object.values(ExperienceLevel).includes(extractedLevel as ExperienceLevel)
+    ) {
       return extractedLevel as ExperienceLevel;
     }
   } catch (error) {
