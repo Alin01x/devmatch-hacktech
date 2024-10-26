@@ -1,6 +1,6 @@
 import { headers } from "../_utils/requestHeaders";
 import { JobDescription } from "../../../types/JobDescription";
-import { extractExperienceLevel } from "./extractors/extractExperienceLevel";
+import { extractJobExperienceLevel } from "../_extractors/extractJobExperienceLevel";
 import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     // TODO: implement data validation using zod
 
     // Extract the experience level
-    const experienceLevel = await extractExperienceLevel(
+    const experienceLevel = await extractJobExperienceLevel(
       jobTitle,
       detailedDescription
     );

@@ -1,5 +1,5 @@
-import { ExperienceLevel } from "@/types/JobDescription";
-import { sendGPTRequest } from "../../_utils/openAI";
+import { sendGPTRequest } from "../_utils/openAI";
+import { ExperienceLevel } from "@/types/Enums";
 
 const ExperienceLevelMapping: Record<ExperienceLevel, string[]> = {
   junior: ["junior", "entry level", "entry-level", "beginner", "trainee"],
@@ -7,7 +7,7 @@ const ExperienceLevelMapping: Record<ExperienceLevel, string[]> = {
   senior: ["senior", "expert", "lead", "principal", "staff"],
 };
 
-export const extractExperienceLevel = async (
+export const extractJobExperienceLevel = async (
   jobTitle: string,
   detailedDescription: string
 ): Promise<ExperienceLevel> => {
@@ -31,7 +31,7 @@ export const extractExperienceLevel = async (
     const gptResponse = await sendGPTRequest({
       userRequest,
       systemPrompt,
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       temperature: 0.3,
       maxTokens: 10,
     });
