@@ -1,5 +1,5 @@
 import { ExperienceLevel } from "@/types/JobDescription";
-import { sendGPTRequest } from "../../_utils/openai";
+import { sendGPTRequest } from "../../_utils/openAI";
 
 const ExperienceLevelMapping: Record<ExperienceLevel, string[]> = {
   junior: ["junior", "entry level", "entry-level", "beginner", "trainee"],
