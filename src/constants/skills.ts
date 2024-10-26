@@ -63,10 +63,8 @@ export const SKILLS = [
   "NestJS",
   "Hapi.js",
   "Koa.js",
-  "Laravel",
 
   // Databases generic
-  "SQL",
   "NoSQL",
 
   // Databases specific
@@ -122,8 +120,6 @@ export const SKILLS = [
 
   // Mobile Development
   "React Native",
-  "Swift",
-  "Kotlin",
   "Flutter",
   "Objective-C",
   "Xamarin",
