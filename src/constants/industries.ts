@@ -9,5 +9,7 @@ export const INDUSTRIES = [
   "Marketing",
   "Retail",
   "Telecommunications",
+  "Technology",
+  "Transportation",
   "Other",
 ];
