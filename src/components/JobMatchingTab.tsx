@@ -10,7 +10,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Briefcase, Plus, X, Upload, Loader2 } from "lucide-react";
+import { Briefcase, Plus, X, Upload, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,12 @@ import {
 import { Combobox } from "@/components/ui/combobox";
 import { INDUSTRIES } from "@/constants/industries";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -45,49 +51,59 @@ const MDXEditor = dynamic(
   }
 );
 
-const JobMatchingTab = () => {
-  const [jobTitle, setJobTitle] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
-  const [industry, setIndustry] = useState("");
-  const [skills, setSkills] = useState([]);
-  const [newSkill, setNewSkill] = useState("");
-  const [skillWeights, setSkillWeights] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [matches, setMatches] = useState([]);
+interface Match {
+  name: string;
+  score: number;
+  explanation: string;
+}
 
-  const handleAddSkill = () => {
-    if (newSkill && !skills.includes(newSkill)) {
-      setSkills([...skills, newSkill]);
-      setSkillWeights({
-        ...skillWeights,
-        [newSkill]: 0,
+const JobMatchingTab: React.FC = () => {
+  const [jobTitle, setJobTitle] = useState<string>("");
+  const [jobDescription, setJobDescription] = useState<string>("");
+  const [industry, setIndustry] = useState<string>("");
+  const [skills, setSkills] = useState<Record<string, number>>({});
+  const [newSkill, setNewSkill] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [matches, setMatches] = useState<Match[]>([]);
+
+  const handleAddSkill = (): void => {
+    const trimmedSkill = newSkill.trim();
+    const skillExists = Object.keys(skills).some(
+      (skill) => skill.toLowerCase() === trimmedSkill.toLowerCase()
+    );
+
+    if (trimmedSkill && !skillExists) {
+      const initialScore = Object.keys(skills).length === 0 ? 100 : 0;
+      setSkills({
+        ...skills,
+        [trimmedSkill]: initialScore,
       });
-      setNewSkill("");
     }
+    setNewSkill("");
   };
 
-  const handleRemoveSkill = (skillToRemove) => {
-    setSkills(skills.filter((skill) => skill !== skillToRemove));
-    const { [skillToRemove]: _, ...remainingWeights } = skillWeights;
-    setSkillWeights(remainingWeights);
+  const handleRemoveSkill = (skillToRemove: string): void => {
+    setSkills(
+      Object.fromEntries(
+        Object.entries(skills).filter(([skill]) => skill !== skillToRemove)
+      )
+    );
   };
 
-  const handleWeightChange = (skill, value) => {
-    setSkillWeights({
-      ...skillWeights,
+  const handleWeightChange = (skill: string, value: number[]): void => {
+    setSkills({
+      ...skills,
       [skill]: value[0],
     });
   };
 
-  const handleJobDescriptionChange = (content: string) => {
+  const handleJobDescriptionChange = (content: string): void => {
     setJobDescription(content);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     setLoading(true);
-    // Here you would integrate with your backend API
     try {
-      // Simulated API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setMatches([
         {
@@ -119,6 +135,10 @@ const JobMatchingTab = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateTotalWeight = (): number => {
+    return Object.values(skills).reduce((sum, weight) => sum + weight, 0);
   };
 
   return (
@@ -178,7 +198,24 @@ const JobMatchingTab = () => {
 
           {/* Technical Skills Section */}
           <div className="p-4 border rounded-lg dark:bg-gray-800">
-            <h3 className="font-medium mb-2">Technical Skills</h3>
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium">Technical Skills</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="w-4 h-4 text-gray-500 cursor-pointer" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>The total of the skills should be 100%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <span className="text-sm">
+                Total Weight: {calculateTotalWeight()}%
+              </span>
+            </div>
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Input
@@ -194,7 +231,7 @@ const JobMatchingTab = () => {
               </div>
 
               <div className="space-y-2">
-                {skills.map((skill) => (
+                {Object.entries(skills).map(([skill, weight]) => (
                   <div
                     key={skill}
                     className="flex items-center gap-4 p-2 bg-gray-50 rounded"
@@ -202,17 +239,18 @@ const JobMatchingTab = () => {
                     <Badge>{skill}</Badge>
                     <div className="flex-1">
                       <Slider
-                        value={[skillWeights[skill] || 0]}
+                        value={[weight]}
                         onValueChange={(value) =>
                           handleWeightChange(skill, value)
                         }
                         max={100}
                         step={1}
+                        defaultValue={[
+                          Object.keys(skills).length === 1 ? 100 : 0,
+                        ]}
                       />
                     </div>
-                    <span className="w-12 text-sm">
-                      {skillWeights[skill] || 0}%
-                    </span>
+                    <span className="w-12 text-sm">{weight}%</span>
                     <Button
                       variant="ghost"
                       size="sm"
