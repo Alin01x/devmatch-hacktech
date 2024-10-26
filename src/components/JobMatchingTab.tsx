@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Card,
@@ -13,6 +10,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+
 import { Briefcase, Plus, X, Search, Info, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,6 +42,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Skills } from "@/types/JobDescription";
+import { useToast } from "@/hooks/use-toast";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -67,157 +67,132 @@ type Match = {
   explanation: string;
 };
 
-// Define the Zod schema
-const jobMatchingSchema = z.object({
-  jobTitle: z.string().min(1, "Job title is required"),
-  industry: z.string().min(1, "Industry is required"),
-  jobDescription: z.string().min(1, "Job description is required"),
-  skills: z
-    .array(
-      z.object({
-        name: z.string(),
-        weight: z.number(),
-      })
-    )
-    .min(1, "At least one technical skill is required"),
-});
-
-// Infer the TypeScript type from the schema
-type JobMatchingFormData = z.infer<typeof jobMatchingSchema>;
-
-// Update the type definition
-type Skill = {
-  name: string;
-  weight: number;
-};
-
 const JobMatchingTab: React.FC = () => {
   const [jobTitle, setJobTitle] = useState<string>("");
   const [jobDescription, setJobDescription] = useState<string>("");
   const [industry, setIndustry] = useState<string>("");
-  const [skills, setSkills] = useState<Skill[]>([]);
+  const [skills, setSkills] = useState<Skills>({});
   const [newSkill, setNewSkill] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [matches, setMatches] = useState<Match[]>([]);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    clearErrors,
-  } = useForm<JobMatchingFormData>({
-    resolver: zodResolver(jobMatchingSchema),
-    defaultValues: {
-      jobTitle: "",
-      industry: "",
-      jobDescription: "",
-      skills: [],
-    },
+  const { toast } = useToast();
+  const [errors, setErrors] = useState<{
+    jobTitle: string;
+    industry: string;
+    jobDescription: string;
+    skills: string;
+  }>({
+    jobTitle: "",
+    industry: "",
+    jobDescription: "",
+    skills: "",
   });
-
-  useEffect(() => {
-    if (jobTitle) clearErrors("jobTitle");
-    if (skills.length > 0) clearErrors("skills");
-    if (industry) clearErrors("industry");
-    if (jobDescription) clearErrors("jobDescription");
-  }, [jobTitle, skills, industry, jobDescription, clearErrors]);
-
-  const handleJobDescriptionChange = (value: string) => {
-    setJobDescription(value);
-    setValue("jobDescription", value);
-  };
-
-  const handleIndustryChange = (value: string) => {
-    setIndustry(value);
-    setValue("industry", value);
-  };
 
   const handleAddSkill = (): void => {
     const trimmedSkill = newSkill.trim();
-    const skillExists = skills.some(
-      (skill) => skill.name.toLowerCase() === trimmedSkill.toLowerCase()
-    );
 
-    if (trimmedSkill && !skillExists) {
-      const initialWeight = skills.length === 0 ? 100 : 0;
-      const updatedSkills = [
+    if (!skills.hasOwnProperty(trimmedSkill)) {
+      // If it's the first skill, set its weight to 100
+      const weight = Object.keys(skills).length === 0 ? 100 : 0;
+      setSkills({
         ...skills,
-        { name: trimmedSkill, weight: initialWeight },
-      ];
-      setSkills(updatedSkills);
-      setValue("skills", updatedSkills);
+        [trimmedSkill]: weight,
+      });
     }
+
     setNewSkill("");
   };
 
   const handleRemoveSkill = (skillToRemove: string): void => {
-    const updatedSkills = skills.filter(
-      (skill) => skill.name !== skillToRemove
-    );
+    const auxSkills = { ...skills };
+    delete auxSkills[skillToRemove];
 
     // If there's only one skill left, set its weight to 100
-    if (updatedSkills.length === 1) {
-      updatedSkills[0].weight = 100;
+    if (Object.keys(auxSkills).length === 1) {
+      auxSkills[Object.keys(auxSkills)[0]] = 100;
     }
 
-    setSkills(updatedSkills);
-    setValue("skills", updatedSkills);
+    setSkills(auxSkills);
   };
 
-  const handleWeightChange = (skillName: string, value: number[]): void => {
-    const updatedSkills = skills.map((skill) =>
-      skill.name === skillName ? { ...skill, weight: value[0] } : skill
-    );
-    setSkills(updatedSkills);
-    setValue("skills", updatedSkills);
+  const validate = () => {
+    const errors = {
+      jobTitle: jobTitle.trim() === "" ? "Job title is required." : "",
+      industry: industry.trim() === "" ? "Industry is required." : "",
+      skills:
+        Object.keys(skills).length === 0
+          ? "At least one technical skill is required."
+          : totalWeight !== 100
+          ? "Total weight must be 100."
+          : "",
+      jobDescription:
+        jobDescription.trim() === ""
+          ? "Job description is required."
+          : jobDescription.trim().length < 100
+          ? "Job description must be at least 100 characters."
+          : "",
+    };
+
+    setErrors(errors);
+    return {
+      isValid: Object.values(errors).every((error) => error === ""),
+      errors,
+    };
   };
 
-  const onSubmit = async (data: JobMatchingFormData) => {
-    setLoading(true);
+  const submit = async () => {
+    const { isValid, errors } = validate();
+    if (!isValid) {
+      if (
+        errors.jobTitle !== "" ||
+        errors.industry !== "" ||
+        errors.jobDescription !== ""
+      ) {
+        document.getElementById("job-matching-form")?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+      return;
+    }
+
+    console.log("Submitting Job Description...");
+    setIsLoading(true);
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log(data);
-      setMatches([
-        {
-          name: "John Doe",
-          score: 92,
-          explanation: "Strong match in banking domain & React expertise",
-        },
-        {
-          name: "Jane Smith",
-          score: 88,
-          explanation: "Excellent technical skills match",
-        },
-        {
-          name: "Bob Johnson",
-          score: 85,
-          explanation: "Similar industry experience",
-        },
-        {
-          name: "Alice Brown",
-          score: 82,
-          explanation: "Good overall skill alignment",
-        },
-        {
-          name: "Chris Wilson",
-          score: 78,
-          explanation: "Matching domain knowledge",
-        },
-      ]);
-      setIsResultsOpen(true); // Open the results dialog
+      const response = await fetch("/api/job-matching", {
+        method: "POST",
+        body: JSON.stringify({
+          jobTitle,
+          industry,
+          detailedDescription: jobDescription,
+          skills,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("received response");
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Error",
+        description: "An error occurred while finding matching candidates.",
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const calculateTotalWeight = (): number => {
-    return skills.reduce((sum, skill) => sum + skill.weight, 0);
-  };
+  const totalWeight = Object.values(skills).reduce(
+    (sum, weight) => sum + weight,
+    0
+  );
 
-  const totalWeight = calculateTotalWeight();
-  const isWeightValid = skills.length === 0 || totalWeight === 100;
+  const renderErrorLine = (error: string) => {
+    return error !== "" && <p className="text-red-500 text-sm mt-1">{error}</p>;
+  };
 
   return (
     <Card>
@@ -231,25 +206,18 @@ const JobMatchingTab: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-6" id="job-matching-form">
           <div className="p-4 border rounded-lg dark:bg-gray-800 bg-gray-50">
             <h3 className="font-medium mb-2">Job Details</h3>
             <div className="space-y-4">
               <div>
                 <Input
                   placeholder="Job Title"
-                  {...register("jobTitle")}
                   value={jobTitle}
-                  onChange={(e) => {
-                    setJobTitle(e.target.value);
-                    setValue("jobTitle", e.target.value);
-                  }}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  disabled={isLoading}
                 />
-                {errors.jobTitle && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.jobTitle.message}
-                  </p>
-                )}
+                {renderErrorLine(errors.jobTitle)}
               </div>
               <div>
                 <Combobox
@@ -257,20 +225,18 @@ const JobMatchingTab: React.FC = () => {
                   placeholder="Select industry..."
                   emptyMessage="No industry found."
                   className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  onChange={handleIndustryChange}
+                  onChange={setIndustry}
                   value={industry}
+                  disabled={isLoading}
                 />
-                {errors.industry && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.industry.message}
-                  </p>
-                )}
+                {renderErrorLine(errors.industry)}
               </div>
               <div>
                 <div className="editorWrapper border border-input rounded-lg h-[462px]">
                   <MDXEditor
-                    onChange={handleJobDescriptionChange}
+                    onChange={setJobDescription}
                     markdown={jobDescription}
+                    readOnly={isLoading}
                     plugins={[
                       toolbarPlugin({
                         toolbarContents: () => (
@@ -286,14 +252,12 @@ const JobMatchingTab: React.FC = () => {
                       frontmatterPlugin(),
                       diffSourcePlugin(),
                     ]}
-                    contentEditableClassName="prose text-sm dark:prose-invert max-w-none h-[420px] overflow-y-auto"
+                    contentEditableClassName={`prose text-sm dark:prose-invert max-w-none h-[420px] overflow-y-auto ${
+                      isLoading ? "cursor-not-allowed" : ""
+                    }`}
                   />
                 </div>
-                {errors.jobDescription && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.jobDescription.message}
-                  </p>
-                )}
+                {renderErrorLine(errors.jobDescription)}
               </div>
             </div>
           </div>
@@ -301,7 +265,7 @@ const JobMatchingTab: React.FC = () => {
           {/* Technical Skills Section */}
           <div className="p-4 border rounded-lg dark:bg-gray-800">
             <div className="flex flex-col gap-2">
-              <div className="flex items-center">
+              <div className="flex items-center mb-2">
                 <h3 className="font-medium">Technical Skills</h3>
                 <TooltipProvider>
                   <Tooltip>
@@ -309,25 +273,11 @@ const JobMatchingTab: React.FC = () => {
                       <Info className="size-4 text-black dark:text-white cursor-pointer ml-2" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Example: React, Python, SQL</p>
+                      <p>Example: React, Python, SQL...</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <span className="text-sm font-medium mb-2">
-                Total Weight:{" "}
-                <span
-                  className={
-                    skills.length === 0
-                      ? "text-black dark:text-white"
-                      : isWeightValid
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  {totalWeight}%
-                </span>
-              </span>
             </div>
 
             <div className="space-y-4">
@@ -337,11 +287,14 @@ const JobMatchingTab: React.FC = () => {
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
+                  disabled={isLoading}
                 />
                 <Button
                   type="button"
                   onClick={handleAddSkill}
                   className="whitespace-nowrap text-black dark:text-white"
+                  variant="secondary"
+                  disabled={newSkill.trim() === "" || isLoading}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Skill
@@ -349,30 +302,39 @@ const JobMatchingTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                {skills.map((skill) => (
+                {Object.keys(skills).map((skill) => (
                   <div
-                    key={skill.name}
-                    className="flex items-center gap-4 p-2 bg-gray-50 dark:bg-gray-800 rounded"
+                    key={skill}
+                    className="flex items-center gap-4 bg-gray-50 dark:bg-gray-800 rounded"
                   >
-                    <Badge className="justify-center dark:text-white w-48 block text-center py-1 bg-slate-">
-                      {skill.name}
+                    <Badge className="justify-center dark:text-white w-40 block text-center py-1 bg-secondary hover:bg-secondary/90">
+                      {skill}
                     </Badge>
                     <div className="flex-1">
                       <Slider
-                        value={[skill.weight]}
-                        onValueChange={(value) =>
-                          handleWeightChange(skill.name, value)
-                        }
+                        value={[skills[skill]]}
+                        onValueChange={(value) => {
+                          setSkills({
+                            ...skills,
+                            [skill]: value[0],
+                          });
+                        }}
+                        min={0}
                         max={100}
                         className="text-white"
                         step={1}
                       />
                     </div>
-                    <span className="text-sm">{skill.weight}%</span>
+
+                    <div className="w-8 text-right font-medium text-sm">
+                      <span>{skills[skill]}%</span>
+                    </div>
+
                     <Button
+                      type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleRemoveSkill(skill.name)}
+                      onClick={() => handleRemoveSkill(skill)}
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -380,19 +342,31 @@ const JobMatchingTab: React.FC = () => {
                 ))}
               </div>
             </div>
-            {errors.skills && (
-              <p className="text-red-500 text-sm mt-2">
-                {errors.skills.message?.toString() ?? "Invalid skills"}
-              </p>
+
+            {renderErrorLine(errors.skills)}
+
+            {Object.keys(skills).length > 0 && (
+              <div className="text-md font-medium text-slate-500 dark:text-slate-200 text-right mt-4">
+                <span>Total Weight: </span>
+                <span
+                  className={
+                    totalWeight === 100 ? "text-green-500" : "text-red-500"
+                  }
+                >
+                  {totalWeight}%
+                </span>
+              </div>
             )}
           </div>
 
           <div className="flex justify-end">
             <Button
-              disabled={isSubmitting || loading || !isWeightValid}
-              className="w-full dark:text-white"
+              type="button"
+              disabled={isLoading}
+              className="dark:text-white"
+              onClick={submit}
             >
-              {isSubmitting || loading ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Finding Candidates...
@@ -435,7 +409,7 @@ const JobMatchingTab: React.FC = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </form>
+        </div>
       </CardContent>
     </Card>
   );

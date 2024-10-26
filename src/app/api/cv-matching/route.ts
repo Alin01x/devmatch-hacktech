@@ -1,13 +1,7 @@
 import { headers } from "../_utils/requestHeaders";
-import { createClient } from "@supabase/supabase-js";
 import { ExperienceLevel } from "@/types/Enums";
 import { extractCvData } from "../_extractors/extractCvData";
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+import { supabase } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   try {
@@ -28,10 +22,10 @@ export async function POST(request: Request) {
 
     // Store CV in the database
     const { data, error } = await supabase.from("cvs").insert({
-      experienceLevel: extractedFields.experienceLevel,
+      experience_level: extractedFields.experienceLevel,
       skills: extractedFields.skills,
       industries: extractedFields.industries,
-      fullContent,
+      full_content: fullContent,
     });
 
     if (error) {

@@ -77,7 +77,10 @@ const CVMatchingTab = () => {
             <input {...getInputProps()} />
             <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             {fileName ? (
-              <p className="text-sm text-gray-600">File added: {fileName}</p>
+              <div>
+                <p className="text-sm text-gray-600">File added: </p>
+                <p className="text font-medium text-gray-600">{fileName}</p>
+              </div>
             ) : (
               <>
                 <p className="text-sm text-gray-600">
