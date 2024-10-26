@@ -8,7 +8,7 @@ import { MatchingCV } from "@/types/MatchResult";
 
 import { SkillAnalysisService } from "../_services/SkillAnalysisService";
 import { OverallAnalysisService } from "../_services/OverallAnalysisService";
-
+ 
 export async function POST(request: Request) {
   try {
     const { job_title, industry, detailed_description, skills } =
@@ -119,6 +119,8 @@ export const handleJobMatching = async (
         naturalLanguageScore: 0,
         naturalLanguageReasoning: "",
       },
+      finalScore: 0,
+      bestMatchReasoning: "",
     });
   }
 
@@ -130,6 +132,8 @@ export const handleJobMatching = async (
     const weightedScoreB = b.technicalScore * 3 + b.industryScore;
     return weightedScoreB - weightedScoreA;
   });
+
+  console.log(`Found ${matchingCVs.length} potential CVs by Skill Overlap...`);
 
   // Let's narrow down by only analyzing further the top 10 CVs
   matchingCVs = matchingCVs.slice(0, 10);
