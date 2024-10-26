@@ -8,15 +8,18 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { FileText, Search, Upload } from "lucide-react";
+import { FileText, Loader2, Search, Upload } from "lucide-react";
 import mammoth from "mammoth";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const CVMatchingTab = () => {
   const [cvContent, setCvContent] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { toast } = useToast();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -27,11 +30,21 @@ const CVMatchingTab = () => {
         const result = await mammoth.extractRawText({ arrayBuffer });
         const text = result.value;
         setCvContent(text);
-        console.log("CV Content:", text);
       } catch (error) {
+        toast({
+          title: "Error",
+          description:
+            "Error extracting text from docx. Please try with a different document.",
+          variant: "destructive",
+        });
         console.error("Error extracting text from docx:", error);
       }
     } else {
+      toast({
+        title: "Error",
+        description: "Unsupported file format. Please upload a .docx file.",
+        variant: "destructive",
+      });
       console.error("Unsupported file format. Please upload a .docx file.");
     }
   }, []);
@@ -45,14 +58,28 @@ const CVMatchingTab = () => {
     multiple: false,
   });
 
-  const handleFindMatchingJob = () => {
-    setLoading(true);
-    // Add your matching logic here
-    console.log("Finding matching job...");
-    // Simulate processing time
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+  const submit = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/cv-matching", {
+        method: "POST",
+        body: JSON.stringify({
+          fullContent: cvContent,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("received response", data);
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Error",
+        description: "An error occurred while finding matching job.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -96,12 +123,12 @@ const CVMatchingTab = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button
-              onClick={handleFindMatchingJob}
-              disabled={!cvContent || loading}
-            >
-              {loading ? (
-                "Finding matching job..."
+            <Button onClick={submit} disabled={!cvContent || isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Finding matching job...
+                </>
               ) : (
                 <>
                   <Search className="w-4 h-4 mr-2" />
@@ -109,39 +136,6 @@ const CVMatchingTab = () => {
                 </>
               )}
             </Button>
-          </div>
-
-          {/* CV Content Display */}
-          {cvContent && (
-            <div className="p-4 border rounded-lg dark:bg-gray-800 light:bg-gray-50">
-              <h3 className="font-medium mb-4">CV Content</h3>
-              <pre className="whitespace-pre-wrap text-sm">{cvContent}</pre>
-            </div>
-          )}
-
-          {/* Best Match Section */}
-          <div className="p-4 border rounded-lg dark:bg-gray-800 light:bg-gray-50">
-            <h3 className="font-medium mb-4">Best Matching Job</h3>
-            <div className="space-y-4">
-              <div className="p-4 rounded-md dark:bg-gray-800 light:bg-gray-50">
-                <div className="flex justify-between items-center mb-3 ">
-                  <span className="font-medium">Job Title</span>
-                  <span className="text-sm bg-primary px-2 py-1 rounded">
-                    Score: 92%
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm">Industry match: 90%</p>
-                  <p className="text-sm">Technical skills match: 95%</p>
-                  <p className="text-sm">Overall description match: 91%</p>
-                </div>
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600">
-                    Match explanation placeholder
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </CardContent>
