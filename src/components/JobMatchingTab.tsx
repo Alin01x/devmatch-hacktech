@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
+import { CVMatch, MATCH_RESULT_SAMPLES } from "@/types/constants";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -60,13 +61,6 @@ const MDXEditor = dynamic(
   }
 );
 
-// Define the Match type
-type Match = {
-  name: string;
-  score: number;
-  explanation: string;
-};
-
 const JobMatchingTab: React.FC = () => {
   const [jobTitle, setJobTitle] = useState<string>("");
   const [jobDescription, setJobDescription] = useState<string>("");
@@ -74,7 +68,7 @@ const JobMatchingTab: React.FC = () => {
   const [skills, setSkills] = useState<Skills>({});
   const [newSkill, setNewSkill] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<CVMatch[]>([]);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const { toast } = useToast();
@@ -382,28 +376,66 @@ const JobMatchingTab: React.FC = () => {
 
           {/* Results Dialog */}
           <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="md:max-w-[800px]  max-h-screen overflow-y-auto md:pb-6 pb-10">
               <DialogHeader>
-                <DialogTitle>Top 5 Matching Candidates</DialogTitle>
+                <DialogTitle className="text-2xl font-bold mb-4">
+                  Top 5 Matching Candidates
+                </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 mt-4">
-                {matches.map((match, index) => (
+              <div className="space-y-2 mt-4 overflow-y-auto">
+                {MATCH_RESULT_SAMPLES.map((match, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 bg-secondary rounded-lg"
+                    className={`p-4 rounded-lg transition-all duration-200 ${
+                      index === 0
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary"
+                    }`}
                   >
-                    <div>
-                      <h3 className="font-medium">{match.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {match.explanation}
-                      </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-lg dark:text-white">
+                        {match.name}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={index === 0 ? "secondary" : "outline"}
+                          className={`w-16 justify-center ${
+                            index === 0
+                              ? "bg-primary-foreground text-primary text-white dark:bg-white dark:text-black"
+                              : "border border-black dark:border-white"
+                          }`}
+                        >
+                          {match.experienceLevel}
+                        </Badge>
+                        <Badge
+                          variant={index === 0 ? "secondary" : "outline"}
+                          className={`w-16 justify-center ${
+                            index === 0
+                              ? "bg-primary-foreground text-primary text-white dark:bg-white dark:text-black"
+                              : "border border-black dark:border-white"
+                          }`}
+                        >
+                          {match.score.finalScore}%
+                        </Badge>
+                      </div>
                     </div>
-                    <Badge
-                      variant={match.score >= 90 ? "default" : "secondary"}
-                      className="ml-2"
-                    >
-                      {match.score}%
-                    </Badge>
+                    <p className="text-sm py-2 dark:text-white">
+                      {match.score.matchExplanation}
+                    </p>
+                    <div className="flex items-center justify-between gap-2 dark:text-white">
+                      <div className="text-xs">
+                        <span className="font-medium">Industry:</span>{" "}
+                        {match.score.industryKnowledgeScore}%
+                      </div>
+                      <div className="text-xs">
+                        <span className="font-medium">Technical:</span>{" "}
+                        {match.score.technicalSkillsScore}%
+                      </div>
+                      <div className="text-xs">
+                        <span className="font-medium">Job Match:</span>{" "}
+                        {match.score.jobDescriptionMatchScore}%
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
