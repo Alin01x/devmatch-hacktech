@@ -13,7 +13,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Briefcase, Plus, X, Info, Loader2 } from "lucide-react";
+import { Briefcase, Plus, X, Search, Info, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -387,20 +387,24 @@ const JobMatchingTab: React.FC = () => {
             )}
           </div>
 
-          <Button
-            className="w-full dark:text-white"
-            type="submit"
-            disabled={isSubmitting || loading || !isWeightValid}
-          >
-            {isSubmitting || loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Finding Candidates...
-              </>
-            ) : (
-              "Find Matching Candidates"
-            )}
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              disabled={isSubmitting || loading || !isWeightValid}
+              className="w-full dark:text-white"
+            >
+              {isSubmitting || loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Finding Candidates...
+                </>
+              ) : (
+                <>
+                  <Search className="w-4 h-4 mr-2" />
+                  Find Matching Candidates
+                </>
+              )}
+            </Button>
+          </div>
 
           {/* Results Dialog */}
           <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
