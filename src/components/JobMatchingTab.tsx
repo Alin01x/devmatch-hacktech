@@ -25,6 +25,16 @@ import {
   frontmatterPlugin,
   diffSourcePlugin,
 } from "@mdxeditor/editor";
+import { Combobox, ComboboxItem } from "@/components/ui/combobox";
+
+const industries: ComboboxItem[] = [
+  { value: "technology", label: "Technology" },
+  { value: "healthcare", label: "Healthcare" },
+  { value: "finance", label: "Finance" },
+  { value: "education", label: "Education" },
+  { value: "retail", label: "Retail" },
+  // Add more industries as needed
+];
 
 const JobMatchingTab = () => {
   const [jobTitle, setJobTitle] = useState("");
@@ -124,10 +134,13 @@ const JobMatchingTab = () => {
                 value={jobTitle}
                 onChange={(e) => setJobTitle(e.target.value)}
               />
-              <Input
-                placeholder="Industry (e.g., Banking, Healthcare)"
+              <Combobox
+                items={industries}
+                placeholder="Select industry..."
+                emptyMessage="No industry found."
+                className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                onChange={setIndustry}
                 value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
               />
               <div className="editorWrapper border border-input rounded-lg">
                 <MDXEditor
