@@ -1,32 +1,36 @@
 import { headers } from "../_utils/requestHeaders";
 import { JobDescription } from "../../../types/JobDescription";
-import { extractJobExperienceLevel } from "../_extractors/extractJobExperienceLevel";
 import { supabase } from "@/lib/supabase";
+import { findTopMatches } from "../_utils/semanticAnalysis";
+import { ExperienceLevel } from "@/types/Enums";
+import { SKILLS } from "@/constants/skills";
 
 export async function POST(request: Request) {
   try {
-    const { jobTitle, industry, detailedDescription, skills } =
-      (await request.json()) as Omit<
-        JobDescription,
-        "id" | "createdAt" | "experienceLevel"
-      >;
+    const { job_title, industry, detailed_description, skills } =
+      (await request.json()) as Omit<JobDescription, "id" | "createdAt">;
 
-    // TODO: implement data validation using zod
+    for (const key in skills) {
+      const weight = skills[key];
+      delete skills[key];
+      skills[getSkillWithProperCase(key)] = weight;
+    }
 
-    // Extract the experience level
-    const experienceLevel = await extractJobExperienceLevel(
-      jobTitle,
-      detailedDescription
-    );
+    // TODO: implement data validation
 
     // Store Job Descriptions in the database
-    const { data, error } = await supabase.from("job_descriptions").insert({
-      experience_level: experienceLevel,
-      detailed_description: detailedDescription,
-      job_title: jobTitle,
+    const jobDescriptionData = {
+      detailed_description: detailed_description,
+      job_title: job_title,
       industry,
       skills,
-    });
+    };
+
+    const { data, error } = await supabase
+      .from("job_descriptions")
+      .insert(jobDescriptionData)
+      .select()
+      .single();
 
     if (error) {
       console.error("Error saving job description:", error);
@@ -39,7 +43,33 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO: Find matching CVs
+    // Find Matching CV
+
+    // Read all CVs from the database with at least 1 skill match
+    const { data: cvs, error: cvError } = await supabase
+      .from("cvs")
+      .select("*")
+      .overlaps("skills", Object.keys(skills));
+
+    if (cvError) {
+      console.error("Error fetching CVs:", cvError);
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch matching CVs." }),
+        {
+          status: 500,
+          headers: { ...headers, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    console.log("CVs with at least one skill", cvs.length);
+
+    // Semantic Analysis
+    const topMatches = findTopMatches(data, cvs);
+
+    console.log("Top Matches:", topMatches);
+    // Find all CVs having at least 50% match with the job description
+    // const matchingCVs = await findMatchingCVs(jobDescriptionData);
 
     return new Response(JSON.stringify({ success: true, data }), {
       status: 200,
@@ -56,3 +86,13 @@ export async function POST(request: Request) {
     );
   }
 }
+
+const getSkillWithProperCase = (skill: string) => {
+  // Read all skills from SKILLS constant I have
+  // If a skill is found in the SKILLS constant, return the skill with proper case
+
+  const skillWithProperCase = SKILLS.find(
+    (s) => s.toLowerCase() === skill.toLowerCase()
+  );
+  return skillWithProperCase || skill;
+};
