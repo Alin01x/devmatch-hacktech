@@ -1,5 +1,3 @@
-import { ExperienceLevel } from "./Enums";
-
 export type Skills = {
   [skillName: string]: number;
 };

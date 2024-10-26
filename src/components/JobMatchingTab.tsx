@@ -405,16 +405,6 @@ const JobMatchingTab: React.FC = () => {
                               : "border border-black dark:border-white"
                           }`}
                         >
-                          {match.experienceLevel}
-                        </Badge>
-                        <Badge
-                          variant={index === 0 ? "secondary" : "outline"}
-                          className={`w-16 justify-center ${
-                            index === 0
-                              ? "bg-primary-foreground text-primary text-white dark:bg-white dark:text-black"
-                              : "border border-black dark:border-white"
-                          }`}
-                        >
                           {match.score.finalScore}%
                         </Badge>
                       </div>
