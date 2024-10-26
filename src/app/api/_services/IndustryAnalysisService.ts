@@ -193,7 +193,7 @@ export class IndustryAnalysisService {
     if (exactMatch) {
       return {
         score: 100,
-        reasoning: `Direct experience in ${targetIndustry}`,
+        reasoning: `Direct experience in ${targetIndustry}.`,
       };
     }
 
@@ -204,12 +204,12 @@ export class IndustryAnalysisService {
     const maxRelatedScore = Math.max(...relatedIndustryScores);
 
     if (maxRelatedScore > 0) {
-      const score = Math.floor(70 + maxRelatedScore * 99); // Scale from 70 to 99
+      const score = Math.floor(60 + maxRelatedScore * 99); // Scale from 60 to 99
       return {
         score: score,
         reasoning: `Experience in related industry: ${cv.industries.join(
           ", "
-        )}`,
+        )}.`,
       };
     }
 
@@ -221,16 +221,16 @@ export class IndustryAnalysisService {
 
     if (relevanceScore > 0) {
       return {
-        score: Math.min(0.7, relevanceScore),
-        reasoning: `Industry-relevant experience found. Keywords: ${terms.join(
+        score: Math.min(0.6, relevanceScore),
+        reasoning: `${targetIndustry} relevant experience found. Keywords: ${terms.join(
           ", "
-        )}`,
+        )}.`,
       };
     }
 
     return {
       score: 0,
-      reasoning: "No relevant industry experience found",
+      reasoning: "No relevant industry experience found.",
     };
   }
 
@@ -275,8 +275,10 @@ export class IndustryAnalysisService {
     });
 
     // Calculate score based on matches
-    const relevanceScore = matches.size / stemmedIndustryTerms.size;
-
+    const relevanceScore = Math.pow(
+      matches.size / stemmedIndustryTerms.size,
+      1.5
+    );
     return {
       relevanceScore,
       terms: Array.from(matches),
