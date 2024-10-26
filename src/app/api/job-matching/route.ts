@@ -1,13 +1,7 @@
 import { headers } from "../_utils/requestHeaders";
 import { JobDescription } from "../../../types/JobDescription";
 import { extractJobExperienceLevel } from "../_extractors/extractJobExperienceLevel";
-import { createClient } from "@supabase/supabase-js";
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+import { supabase } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   try {
@@ -27,9 +21,10 @@ export async function POST(request: Request) {
 
     // Store Job Descriptions in the database
     const { data, error } = await supabase.from("job_descriptions").insert({
-      experienceLevel,
+      experience_level: experienceLevel,
+      detailed_description: detailedDescription,
+      job_title: jobTitle,
       industry,
-      detailedDescription,
       skills,
     });
 
