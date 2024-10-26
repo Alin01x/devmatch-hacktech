@@ -14,7 +14,12 @@ export async function POST(request: Request) {
     const { job_title, industry, detailed_description, skills } =
       (await request.json()) as Omit<JobDescription, "id" | "createdAt">;
 
-    // TODO: implement data validation
+    if (!job_title || !industry || !detailed_description || !skills) {
+      return new Response(JSON.stringify({ error: "Missing data." }), {
+        status: 400,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
 
     return handleJobMatching(job_title, industry, detailed_description, skills);
   } catch (e) {
