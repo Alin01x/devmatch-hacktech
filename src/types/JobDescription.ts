@@ -1,8 +1,4 @@
-export enum ExperienceLevel {
-  Junior = "junior",
-  Mid = "mid",
-  Senior = "senior",
-}
+import { ExperienceLevel } from "./Enums";
 
 export type Skills = {
   [skillName: string]: number;
