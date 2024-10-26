@@ -11,17 +11,30 @@ import {
 import { Briefcase, Plus, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import "@mdxeditor/editor/style.css";
 import {
   MDXEditor,
+  UndoRedo,
+  toolbarPlugin,
+  BoldItalicUnderlineToggles,
   headingsPlugin,
   listsPlugin,
   quotePlugin,
-  thematicBreakPlugin,
+  frontmatterPlugin,
+  diffSourcePlugin,
 } from "@mdxeditor/editor";
+import { Combobox, ComboboxItem } from "@/components/ui/combobox";
+
+const industries: ComboboxItem[] = [
+  { value: "technology", label: "Technology" },
+  { value: "healthcare", label: "Healthcare" },
+  { value: "finance", label: "Finance" },
+  { value: "education", label: "Education" },
+  { value: "retail", label: "Retail" },
+  // Add more industries as needed
+];
 
 const JobMatchingTab = () => {
   const [jobTitle, setJobTitle] = useState("");
@@ -55,6 +68,10 @@ const JobMatchingTab = () => {
       ...skillWeights,
       [skill]: value[0],
     });
+  };
+
+  const handleJobDescriptionChange = (content: string) => {
+    setJobDescription(content);
   };
 
   const handleSubmit = async () => {
@@ -109,7 +126,7 @@ const JobMatchingTab = () => {
       <CardContent>
         <div className="space-y-6">
           {/* Job Description Input Section */}
-          <div className="p-4 border rounded-lg dark:bg-gray-800 light:bg-gray-50">
+          <div className="p-4 border rounded-lg dark:bg-gray-800 bg-gray-50">
             <h3 className="font-medium mb-2">Job Details</h3>
             <div className="space-y-4">
               <Input
@@ -117,22 +134,41 @@ const JobMatchingTab = () => {
                 value={jobTitle}
                 onChange={(e) => setJobTitle(e.target.value)}
               />
-              <Input
-                placeholder="Industry (e.g., Banking, Healthcare)"
+              <Combobox
+                items={industries}
+                placeholder="Select industry..."
+                emptyMessage="No industry found."
+                className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                onChange={setIndustry}
                 value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
               />
-              <Textarea
-                placeholder="Detailed Job Description"
-                className="h-32"
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-              />
+              <div className="editorWrapper border border-input rounded-lg">
+                <MDXEditor
+                  onChange={handleJobDescriptionChange}
+                  markdown={jobDescription}
+                  plugins={[
+                    toolbarPlugin({
+                      toolbarContents: () => (
+                        <>
+                          <UndoRedo />
+                          <BoldItalicUnderlineToggles />
+                        </>
+                      ),
+                    }),
+                    listsPlugin(),
+                    quotePlugin(),
+                    headingsPlugin(),
+                    frontmatterPlugin(),
+                    diffSourcePlugin(),
+                  ]}
+                  contentEditableClassName="prose dark:prose-invert max-w-none min-h-[400px]"
+                />
+              </div>
             </div>
           </div>
 
           {/* Technical Skills Section */}
-          <div className="p-4 border rounded-lg">
+          <div className="p-4 border rounded-lg dark:bg-gray-800">
             <h3 className="font-medium mb-2">Technical Skills</h3>
             <div className="space-y-4">
               <div className="flex gap-2">
