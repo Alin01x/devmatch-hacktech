@@ -198,13 +198,15 @@ export class IndustryAnalysisService {
     }
 
     // 2. Check for related industries using thesaurus
-    const relatedIndustryMatch = cv.industries.some((cvInd) =>
-      this.areIndustriesRelated(cvInd, targetIndustry)
+    const relatedIndustryScores = cv.industries.map((cvInd) =>
+      this.getIndustryRelationScore(cvInd, targetIndustry)
     );
+    const maxRelatedScore = Math.max(...relatedIndustryScores);
 
-    if (relatedIndustryMatch) {
+    if (maxRelatedScore > 0) {
+      const score = Math.floor(70 + maxRelatedScore * 99); // Scale from 70 to 99
       return {
-        score: 70,
+        score: score,
         reasoning: `Experience in related industry: ${cv.industries.join(
           ", "
         )}`,
@@ -219,7 +221,7 @@ export class IndustryAnalysisService {
 
     if (relevanceScore > 0) {
       return {
-        score: Math.max(1, Math.min(70, Math.floor(relevanceScore * 100))),
+        score: Math.min(0.7, relevanceScore),
         reasoning: `Industry-relevant experience found. Keywords: ${terms.join(
           ", "
         )}`,
@@ -280,6 +282,28 @@ export class IndustryAnalysisService {
       terms: Array.from(matches),
     };
   }
-}
 
-export const industryAnalysisService = new IndustryAnalysisService();
+  private getIndustryRelationScore(
+    industry1: string,
+    industry2: string
+  ): number {
+    const ind1 = industry1.toLowerCase();
+    const ind2 = industry2.toLowerCase();
+
+    // Check if industries share common terms in thesaurus
+    const terms1 = this.industryThesaurus[ind1] || [];
+    const terms2 = this.industryThesaurus[ind2] || [];
+
+    const commonTerms = terms1.filter(
+      (term) =>
+        term === ind2 ||
+        terms2.includes(term) ||
+        this.stemmer.stem(term) === this.stemmer.stem(ind2)
+    );
+
+    // Calculate similarity score based on common terms
+    const similarityScore =
+      commonTerms.length / Math.max(terms1.length, terms2.length);
+    return similarityScore;
+  }
+}

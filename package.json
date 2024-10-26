@@ -37,8 +37,7 @@
     "react-dropzone": "^14.2.10",
     "supabase": "^1.207.9",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20",

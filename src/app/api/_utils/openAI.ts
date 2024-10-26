@@ -17,7 +17,7 @@ export async function sendGPTRequest({
   systemPrompt = "You are a helpful assistant.",
   model = "gpt-4o-mini",
   temperature = 0.7,
-  maxTokens = 8048,
+  maxTokens = 16384,
 }: GPTRequestOptions) {
   try {
     console.log("...Sending GPT Request...");

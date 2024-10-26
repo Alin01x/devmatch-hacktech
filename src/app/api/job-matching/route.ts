@@ -3,16 +3,23 @@ import { JobDescription, Skills } from "../../../types/JobDescription";
 import { supabase } from "@/lib/supabase";
 import { SKILLS } from "@/constants/skills";
 import { CV } from "@/types/CV";
-import { industryAnalysisService } from "../_services/IndustryAnalysisService";
+import { IndustryAnalysisService } from "../_services/IndustryAnalysisService";
 import { MatchingCV } from "@/types/MatchResult";
-import { log } from "console";
+
+import { SkillAnalysisService } from "../_services/SkillAnalysisService";
+import { OverallAnalysisService } from "../_services/OverallAnalysisService";
 
 export async function POST(request: Request) {
   try {
     const { job_title, industry, detailed_description, skills } =
       (await request.json()) as Omit<JobDescription, "id" | "createdAt">;
 
-    // TODO: implement data validation
+    if (!job_title || !industry || !detailed_description || !skills) {
+      return new Response(JSON.stringify({ error: "Missing data." }), {
+        status: 400,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
 
     return handleJobMatching(job_title, industry, detailed_description, skills);
   } catch (e) {
@@ -58,44 +65,104 @@ export const handleJobMatching = async (
     skills,
   };
 
-  const { data, error: insertError } = await supabase
+  const { data: jobDescription, error: insertError } = await supabase
     .from("job_descriptions")
     .insert(jobDescriptionData)
     .select()
     .single();
   if (insertError) throw insertError;
 
-  // MATCHING ALGORITHM
+  // 🚀🚀🚀
+  // If you've made it here, thanks for reading my code. This is why you're here for!
+  // THE MATCHING ALGORITHM! 🎉
 
-  // Step 1: Read all CVs with at least 1 skill match
+  // Read all CVs with at least 1 skill overlap
+  // Otherwise what's the point? I know we're devs and supposed to learn new tech but still!!!
   const { data: potentialCVs, error: readError } = await supabase
     .from("cvs")
     .select("*")
     .overlaps("skills", Object.keys(skills));
   if (readError) throw readError;
 
-  console.log("Step 1: Potential", potentialCVs.length);
+  let matchingCVs: MatchingCV[] = [];
 
-  // Step 2: Industry Knowledge Criteria (10%)
-  // Perform semantic analysis on each CV
-
-  const matchingCVs: MatchingCV[] = [];
+  // Initialize services
+  const industryAnalysisService = new IndustryAnalysisService();
+  const overallAnalysisService = new OverallAnalysisService();
 
   for (const cv of potentialCVs) {
-    const { score, reasoning } =
+    // Industry Knowledge Criteria
+    // Perform related industries overlap and semantic analysis on each CV
+    const { score: industryScore, reasoning: industryReasoning } =
       industryAnalysisService.analyzeIndustryRelevance(cv, industry);
+
+    // Technical Skills Criteria
+    // Perform direct overlap verification and score calculation by each skill's weight
+    const technicalAnalysis = SkillAnalysisService.analyzeTechnicalSkills(
+      cv,
+      skills
+    );
 
     matchingCVs.push({
       cv,
-      industryScore: score,
-      industryReasoning: reasoning,
+      industryScore,
+      industryReasoning,
+      technicalScore: technicalAnalysis.score,
+      technicalReasoning: technicalAnalysis.reasoning,
+      technicalSkillsMatched: technicalAnalysis.matchedSkills,
+      technicalSkillsMissing: technicalAnalysis.missingSkills,
+      technicalDetailedScoring: technicalAnalysis.detailedScoring,
     });
   }
 
+  // Sort CVs by combined weighted score (technical score is 3x more important)
+  // In the final score industry is 10% and technical is 30%
+  // So here we scale them to 25% and 75% respectively
+  matchingCVs.sort((a, b) => {
+    const weightedScoreA = a.technicalScore * 3 + a.industryScore;
+    const weightedScoreB = b.technicalScore * 3 + b.industryScore;
+    return weightedScoreB - weightedScoreA;
+  });
 
-  console.log("Step 2: Matching CVs", matchingCVs);
+  // Let's narrow down by only analyzing further the top 10 CVs
+  matchingCVs = matchingCVs.slice(0, 10);
 
-  return new Response(JSON.stringify({ success: true, data }), {
+  // Let's run the overall analysis on the top 10 CVs in parallel
+
+  // Perform separate analyses
+  matchingCVs = await Promise.all(
+    matchingCVs.map(async (matchingCV) => {
+      // Get overall analysis (OpenAI 85% + semantic 15%)
+      const overallAnalysis = await overallAnalysisService.analyzeMatch(
+        matchingCV.cv,
+        jobDescription
+      );
+
+      return {
+        ...matchingCV,
+        overallScore: overallAnalysis.score,
+        overallMatch: {
+          aiScore: overallAnalysis.aiScore / 100,
+          aiReasoning: overallAnalysis.aiReasoning,
+          naturalLanguageScore: overallAnalysis.naturalLanguageScore / 100,
+          naturalLanguageReasoning: overallAnalysis.naturalLanguageReasoning,
+        },
+      };
+    })
+  );
+
+  const matchingCVswithoutCV = matchingCVs.map((matching) => {
+    const { cv, ...rest } = matching;
+    return rest;
+  });
+
+  console.log("Matching CVs", matchingCVswithoutCV);
+  // Calculate final score
+  // Industry Knowledge Criteria (10%)
+  // Technical Skills Criteria (30%)
+  // Job Description and CV Matching (60%)
+
+  return new Response(JSON.stringify({ success: true, data: matchingCVs }), {
     status: 200,
     headers: { ...headers, "Content-Type": "application/json" },
   });
