@@ -155,7 +155,7 @@ const JobMatchingTab = () => {
           </div>
 
           {/* Technical Skills Section */}
-          <div className="p-4 border rounded-lg">
+          <div className="p-4 border rounded-lg dark:bg-gray-800">
             <h3 className="font-medium mb-2">Technical Skills</h3>
             <div className="space-y-4">
               <div className="flex gap-2">

@@ -23,7 +23,7 @@ const CVMatchingTab = () => {
       <CardContent>
         <div className="space-y-6">
           {/* Upload Section */}
-          <div className="border-2 border-dashed rounded-lg p-8 text-center">
+          <div className="border-2 border-dashed rounded-lg p-8 text-center dark:bg-gray-800">
             <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <p className="text-sm text-gray-600">
               Drag and drop your CV here, or click to browse
