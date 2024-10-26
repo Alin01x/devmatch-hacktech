@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
     "@mdxeditor/editor": "^3.14.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-popover": "^1.1.2",
@@ -22,7 +21,6 @@
     "@supabase/supabase-js": "^2.45.6",
     "@types/natural": "^5.1.5",
     "@types/react-dropzone": "^5.1.0",
-    "@types/string-similarity": "^4.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",

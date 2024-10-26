@@ -1,8 +1,6 @@
 import { sendGPTRequest } from "../_utils/openAI";
 import { EXTRACT_CV_DATA_PROMPT } from "../_utils/prompts";
 
-// TODO:  handle case for which GPT couldn't extract all the data
-
 export const extractCvData = async (
   content: string
 ): Promise<{
