@@ -67,19 +67,46 @@ export const SAMPLE_JOB_MATCH: JobMatch = {
     id: "1",
     job_title: "Senior Full Stack Developer",
     industry: "Information Technology",
-    detailed_description: `We are seeking a Senior Full Stack Developer to join our dynamic team. The ideal candidate will have:
-  
-  - 5+ years of experience in full stack development
-  - Proficiency in React, Node.js, and TypeScript
-  - Experience with cloud platforms (preferably AWS)
-  - Strong problem-solving skills and attention to detail
-  - Excellent communication and teamwork abilities
-  
-  Responsibilities include:
-  - Developing and maintaining web applications
-  - Collaborating with cross-functional teams
-  - Mentoring junior developers
-  - Participating in code reviews and architectural decisions`,
+    detailed_description: `
+# Job Description
+
+**Objective**
+
+We seek a developer proficient in React, Node.js, and TypeScript for full-stack web application development.
+
+**Key Requirements**
+
+- 5+ years full-stack experience
+- Expertise in React, Node.js, TypeScript
+- Familiarity with AWS and MongoDB
+- Strong problem-solving skills
+
+**Responsibilities**
+
+- Develop and maintain web applications
+- Ensure code quality and performance
+- Collaborate with cross-functional teams
+
+**Questions**
+
+#### What's your experience with React and Node.js?
+
+#### How have you used AWS in previous projects?
+
+#### Describe a challenging bug you've fixed recently.
+
+**Assessment**
+
+***Technical skills and experience will be evaluated through a coding challenge and technical interview.***
+
+**Next Steps**
+
+1. Resume review
+2. Initial phone screening
+3. Technical assessment
+4. On-site interview
+5. Reference check
+`,
     skills: ["React", 'Node.js', 'TypeScript', 'AWS', 'MongoDB'],
     createdAt: new Date("2023-04-01")
-  };
+};
