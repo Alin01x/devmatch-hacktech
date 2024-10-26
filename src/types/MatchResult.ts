@@ -20,8 +20,6 @@ export type MatchingCV = {
   overallAnalysis: {
     aiScore: number;
     aiReasoning: string;
-    naturalLanguageScore: number;
-    naturalLanguageReasoning: string;
   };
 
   // Final score and best match reasoning
