@@ -1,4 +1,5 @@
 export const INDUSTRIES = [
+  "Data Analytics",
   "E-commerce",
   "Education",
   "Finance",
@@ -6,6 +7,7 @@ export const INDUSTRIES = [
   "Healthcare",
   "Industrial",
   "Logistics",
+  "Machine Learning",
   "Marketing",
   "Retail",
   "Telecommunications",

@@ -15,18 +15,23 @@ export async function POST(request: Request) {
     }
 
     const extractedFields: {
+      name: string;
       experienceLevel: ExperienceLevel;
       skills: string[];
       industries: string[];
+      role: string;
     } = await extractCvData(fullContent);
 
-    // Store CV in the database
-    const { data, error } = await supabase.from("cvs").insert({
-      experience_level: extractedFields.experienceLevel,
+    const profile = {
+      name: extractedFields.name,
       skills: extractedFields.skills,
       industries: extractedFields.industries,
+      role: "",
       full_content: fullContent,
-    });
+    };
+
+    // Store CV in the database
+    const { error } = await supabase.from("cvs").insert(profile);
 
     if (error) {
       console.error("Error saving job description:", error);
@@ -38,7 +43,7 @@ export async function POST(request: Request) {
 
     // Find Matching Job Descriptions
 
-    return new Response(JSON.stringify({ success: true, data }), {
+    return new Response(JSON.stringify(profile), {
       status: 200,
       headers: { ...headers, "Content-Type": "application/json" },
     });

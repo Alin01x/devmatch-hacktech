@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { FileText, Search, Upload, Briefcase } from "lucide-react";
+import { FileText, Search, Upload, Briefcase, Loader2 } from "lucide-react";
 import mammoth from "mammoth";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { SAMPLE_JOB_MATCH } from "@/types/constants";
 import { JobDescription } from "@/types/JobDescription";
+import { toast } from "@/hooks/use-toast";
 
 const CVMatchingTab = () => {
   const [cvContent, setCvContent] = useState<string>("");
@@ -38,11 +39,21 @@ const CVMatchingTab = () => {
         const result = await mammoth.extractRawText({ arrayBuffer });
         const text = result.value;
         setCvContent(text);
-        console.log("CV Content:", text);
       } catch (error) {
+        toast({
+          title: "Error",
+          description:
+            "Error extracting text from docx. Please try with a different document.",
+          variant: "destructive",
+        });
         console.error("Error extracting text from docx:", error);
       }
     } else {
+      toast({
+        title: "Error",
+        description: "Unsupported file format. Please upload a .docx file.",
+        variant: "destructive",
+      });
       console.error("Unsupported file format. Please upload a .docx file.");
     }
   }, []);
@@ -107,12 +118,12 @@ const CVMatchingTab = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button
-              onClick={handleFindMatchingJob}
-              disabled={!cvContent || loading}
-            >
-              {loading ? (
-                "Finding matching job..."
+            <Button onClick={submit} disabled={!cvContent || isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Finding matching job...
+                </>
               ) : (
                 <>
                   <Search className="w-4 h-4 mr-2" />

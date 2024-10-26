@@ -152,21 +152,21 @@ const JobMatchingTab: React.FC = () => {
     }
 
     console.log("Submitting Job Description...");
-    setIsLoading(true);
 
     try {
+      setIsLoading(true);
       const response = await fetch("/api/job-matching", {
         method: "POST",
         body: JSON.stringify({
-          jobTitle,
+          job_title: jobTitle,
           industry,
-          detailedDescription: jobDescription,
+          detailed_description: jobDescription,
           skills,
         }),
       });
 
       const data = await response.json();
-      console.log("received response");
+      console.log("received response", data);
     } catch (e) {
       console.error(e);
       toast({
