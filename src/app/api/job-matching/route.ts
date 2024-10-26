@@ -174,6 +174,9 @@ export const handleJobMatching = async (
   // Sort by final score
   matchingCVs.sort((a, b) => b.finalScore - a.finalScore);
 
+  // Keep the best 5 CVs
+  matchingCVs = matchingCVs.slice(0, 5);
+
   // Get best match reasoning
   const bestMatchReasoning = await sendGPTRequest({
     systemPrompt: BEST_MATCH_REASONING_PROMPT,
@@ -181,6 +184,14 @@ export const handleJobMatching = async (
   });
 
   matchingCVs[0].bestMatchReasoning = bestMatchReasoning;
+
+  // Ensure all scores have no decimals
+  matchingCVs.forEach((cv) => {
+    cv.industryScore = Math.round(cv.industryScore);
+    cv.technicalScore = Math.round(cv.technicalScore);
+    cv.overallScore = Math.round(cv.overallScore);
+    cv.finalScore = Math.round(cv.finalScore);
+  });
 
   return new Response(JSON.stringify({ success: true, data: matchingCVs }), {
     status: 200,
