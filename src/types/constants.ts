@@ -1,17 +1,14 @@
-import { ExperienceLevel } from './Enums';
 import { JobDescription } from './JobDescription';
 import { MatchResult } from './MatchResult';
 
 // Sample CV and JobDescription objects (you'll need to replace these with actual data)
 export interface CVMatch extends Omit<MatchResult, 'cv' | 'jobDescription'> {
-    experienceLevel: ExperienceLevel,
     name: string
 }
 
 export const MATCH_RESULT_SAMPLES: CVMatch[] = [
     {
     name: "Jane Smith",
-    experienceLevel: ExperienceLevel.Senior,
     score: {
         industryKnowledgeScore: 98,
         technicalSkillsScore: 96,
@@ -22,7 +19,6 @@ export const MATCH_RESULT_SAMPLES: CVMatch[] = [
     },
   {
     name: "John Doe",
-    experienceLevel: ExperienceLevel.Mid, 
     score: {
       industryKnowledgeScore: 85,
       technicalSkillsScore: 92,
@@ -33,7 +29,6 @@ export const MATCH_RESULT_SAMPLES: CVMatch[] = [
   },
   {
     name: "Jane Smith",
-    experienceLevel: ExperienceLevel.Mid,
     score: {
       industryKnowledgeScore: 70,
       technicalSkillsScore: 80,
@@ -44,7 +39,6 @@ export const MATCH_RESULT_SAMPLES: CVMatch[] = [
   },
   {
     name: "Jane Smith",
-    experienceLevel: ExperienceLevel.Junior,
     score: {
       industryKnowledgeScore: 95,
       technicalSkillsScore: 65,
@@ -55,7 +49,6 @@ export const MATCH_RESULT_SAMPLES: CVMatch[] = [
   },
   {
     name: "Jane Smith",
-    experienceLevel: ExperienceLevel.Mid,
     score: {
       industryKnowledgeScore: 60,
       technicalSkillsScore: 55,
@@ -72,10 +65,9 @@ export interface JobMatch extends Omit<JobDescription, 'skills'> {
 
 export const SAMPLE_JOB_MATCH: JobMatch = {
     id: "1",
-    jobTitle: "Senior Full Stack Developer",
-    experienceLevel: ExperienceLevel.Senior,
+    job_title: "Senior Full Stack Developer",
     industry: "Information Technology",
-    detailedDescription: `We are seeking a Senior Full Stack Developer to join our dynamic team. The ideal candidate will have:
+    detailed_description: `We are seeking a Senior Full Stack Developer to join our dynamic team. The ideal candidate will have:
   
   - 5+ years of experience in full stack development
   - Proficiency in React, Node.js, and TypeScript

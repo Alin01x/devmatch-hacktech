@@ -19,15 +19,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SAMPLE_JOB_MATCH } from "@/types/constants";
-import { JobDescription } from "@/types/JobDescription";
+import { JobMatch, SAMPLE_JOB_MATCH } from "@/types/constants";
 import { toast } from "@/hooks/use-toast";
 
 const CVMatchingTab = () => {
   const [cvContent, setCvContent] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [matchingJob, setMatchingJob] = useState<JobDescription | null>(null);
+  const [matchingJob, setMatchingJob] = useState<JobMatch | null>(null);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -118,8 +117,11 @@ const CVMatchingTab = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={submit} disabled={!cvContent || isLoading}>
-              {isLoading ? (
+            <Button
+              onClick={handleFindMatchingJob}
+              disabled={!cvContent || loading}
+            >
+              {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Finding matching job...
@@ -155,11 +157,11 @@ const CVMatchingTab = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-xl font-semibold">
-                      {SAMPLE_JOB_MATCH.jobTitle}
+                      {SAMPLE_JOB_MATCH.job_title}
                     </h3>
-                    <Badge variant="secondary" className="text-sm">
-                      {SAMPLE_JOB_MATCH.experienceLevel}
-                    </Badge>
+                    {/* <Badge variant="secondary" className="text-sm">
+                      {SAMPLE_JOB_MATCH.e}
+                    </Badge> */}
                   </div>
                   <div>
                     <span className="font-medium">Industry:</span>{" "}
@@ -184,7 +186,7 @@ const CVMatchingTab = () => {
                   <div>
                     <h4 className="font-medium mb-2">Job Description:</h4>
                     <p className="text-sm whitespace-pre-wrap font-normal">
-                      {SAMPLE_JOB_MATCH.detailedDescription}
+                      {SAMPLE_JOB_MATCH.detailed_description}
                     </p>
                   </div>
                 </div>

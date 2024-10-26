@@ -1,5 +1,3 @@
-import { ExperienceLevel } from "./Enums";
-
 export interface CV {
   id: string; // UUID
   full_content: string; // Raw CV text content for semantic analysis
