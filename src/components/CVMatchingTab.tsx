@@ -8,40 +8,15 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { FileText, Search, Upload, Loader2, X } from "lucide-react";
+import { FileText, Search, Upload, Loader2 } from "lucide-react";
 import mammoth from "mammoth";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import "@mdxeditor/editor/style.css";
-import { Skeleton } from "./ui/skeleton";
-import dynamic from "next/dynamic";
 import { MatchingJob } from "@/types/MatchResult";
-import {
-  diffSourcePlugin,
-  frontmatterPlugin,
-  headingsPlugin,
-  listsPlugin,
-  quotePlugin,
-} from "@mdxeditor/editor";
-import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import NoResultsDialog from "./NoResultsDialog";
-
-// Dynamically import MDXEditor with SSR disabled
-const MDXEditor = dynamic(
-  () => import("@mdxeditor/editor").then((mod) => mod.MDXEditor),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[420px] space-y-2 p-4">
-        <Skeleton className="h-[400px] w-full animate-pulse" />
-      </div>
-    ),
-  }
-);
+import BestJobResultDialog from "./BestJobResultDialog";
 
 const CVMatchingTab = () => {
   const [cvContent, setCvContent] = useState<string>("");
@@ -100,8 +75,8 @@ const CVMatchingTab = () => {
       });
       const data = await response.json();
 
-      if (data.data?.length > 0) {
-        setMatchingJob(data);
+      if (data.data) {
+        setMatchingJob(data.data);
         setIsResultsOpen(true);
       } else {
         setShowNoResults(true);
@@ -140,8 +115,12 @@ const CVMatchingTab = () => {
             <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             {fileName ? (
               <div>
-                <p className="text-sm text-gray-600">File added: </p>
-                <p className="text font-medium text-gray-600">{fileName}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-200">
+                  File added:{" "}
+                </p>
+                <p className="text font-medium text-gray-600 dark:text-gray-200">
+                  {fileName}
+                </p>
               </div>
             ) : (
               <>
@@ -178,74 +157,7 @@ const CVMatchingTab = () => {
 
           {/* Custom Modal for Matching Job */}
           <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DialogContent className="max-w-4xl p-0">
-              <ScrollArea className="h-[calc(100vh-200px)] rounded-lg">
-                <DialogHeader className="w-full fixed p-6 bg-white opac shadow-md rounded-lg z-20">
-                  <DialogTitle className="w-full flex items-center justify-between text-2xl font-bold gap-2">
-                    <div>Best Matching Job</div>
-                    <DialogClose asChild>
-                      <div className="rounded-full p-2 hover:bg-gray-100 transition-all duration-200 ease-in-out transform hover:scale-110">
-                        <X className="h-4 w-4 cursor-pointer" />
-                      </div>
-                    </DialogClose>
-                  </DialogTitle>
-                </DialogHeader>
-                {matchingJob && (
-                  <div className="space-y-6 p-6 mt-20">
-                    <div>
-                      <h3 className="text-xl font-semibold mb-2">
-                        {matchingJob.jobDescription.job_title}
-                      </h3>
-                      <p className="text-gray-600">
-                        {matchingJob.jobDescription.industry}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Required Skills:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {Object.entries(matchingJob.jobDescription.skills).map(
-                          ([skill, weight]) => (
-                            <Badge key={skill} variant="secondary">
-                              {skill} ({weight}%)
-                            </Badge>
-                          )
-                        )}
-                      </div>
-                    </div>
-                    <div className="-z-10">
-                      <h4 className="font-medium mb-2">Job Description:</h4>
-                      <MDXEditor
-                        markdown={
-                          matchingJob.jobDescription.detailed_description
-                        }
-                        contentEditableClassName="-z-10"
-                        readOnly
-                        plugins={[
-                          listsPlugin(),
-                          quotePlugin(),
-                          headingsPlugin(),
-                          frontmatterPlugin(),
-                          diffSourcePlugin(),
-                        ]}
-                      />
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Match Scores:</h4>
-                      <p>Industry Score: {matchingJob.industryScore}%</p>
-                      <p>Technical Score: {matchingJob.technicalScore}%</p>
-                      <p>Overall Score: {matchingJob.overallScore}%</p>
-                      <p>Final Score: {matchingJob.finalScore}%</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">
-                        Best Match Reasoning:
-                      </h4>
-                      <p>{matchingJob.bestMatchReasoning}</p>
-                    </div>
-                  </div>
-                )}
-              </ScrollArea>
-            </DialogContent>
+            {matchingJob && <BestJobResultDialog matchingJob={matchingJob} />}
           </Dialog>
           <NoResultsDialog
             isOpen={showNoResults}

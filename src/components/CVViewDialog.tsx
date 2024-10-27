@@ -1,11 +1,11 @@
 import React from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MatchingCV } from "@/types/MatchResult";
 import { MDXEditor } from "@mdxeditor/editor";
 import {
   headingsPlugin,
@@ -14,6 +14,7 @@ import {
   frontmatterPlugin,
   diffSourcePlugin,
 } from "@mdxeditor/editor";
+import { X } from "lucide-react";
 
 interface CVViewDialogProps {
   isOpen: boolean;
@@ -31,12 +32,13 @@ const CVViewDialog: React.FC<CVViewDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold mb-4">
-          {/* {title} */}
-        </DialogTitle>
+        <DialogTitle className="text-2xl font-bold mb-4"></DialogTitle>
       </DialogHeader>
-      <DialogContent className="min-w-full h-screen overflow-y-auto md:pb-6 pb-10 rounded-none">
-        <div className="mt-4">
+      <DialogContent className="h-[calc(100vh-200px)] min-w-[calc(80vw)] overflow-y-auto md:pb-6 pb-10 rounded-none">
+        <DialogClose className="absolute right-4 top-4">
+          <X className="h-6 w-6 cursor-pointer" />
+        </DialogClose>
+        <div className="mt-6 flex-1">
           <MDXEditor
             markdown={content}
             readOnly

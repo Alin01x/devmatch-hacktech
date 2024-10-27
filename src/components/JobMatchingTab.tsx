@@ -40,7 +40,7 @@ import {
 import { Skills } from "@/types/JobDescription";
 import { useToast } from "@/hooks/use-toast";
 import { SKILLS as SKILLS_OPTIONS } from "@/constants/skills";
-import MatchResultDialog from "@/components/MatchResultDialog";
+import CandidatesResultDialog from "@/components/CandidatesResultDialog";
 import { MatchingCV } from "@/types/MatchResult";
 import NoResultsDialog from "./NoResultsDialog";
 
@@ -188,20 +188,20 @@ const JobMatchingTab: React.FC = () => {
   };
 
   return (
-    <Card>
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
           <Briefcase className="w-5 h-5" />
           Job Requirements Matching
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           Enter a job to find the top 5 matching candidates
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6" id="job-matching-form">
-          <div className="p-4 border rounded-lg dark:bg-gray-800 bg-gray-50">
-            <h3 className="font-medium mb-2">Job Details</h3>
+          <div className="p-2 sm:p-4 border rounded-lg dark:bg-gray-800 bg-gray-50">
+            <h3 className="font-medium mb-2 text-sm sm:text-base">Job Details</h3>
             <div className="space-y-4">
               <div>
                 <Input
@@ -225,7 +225,7 @@ const JobMatchingTab: React.FC = () => {
                 {renderErrorLine(errors.industry)}
               </div>
               <div>
-                <div className="editorWrapper border border-input rounded-lg h-[462px] overflow-hidden">
+                <div className="editorWrapper border border-input rounded-lg h-[300px] sm:h-[462px] overflow-hidden">
                   <MDXEditor
                     onChange={setJobDescription}
                     markdown={jobDescription}
@@ -245,9 +245,9 @@ const JobMatchingTab: React.FC = () => {
                       frontmatterPlugin(),
                       diffSourcePlugin(),
                     ]}
-                    contentEditableClassName={`prose text-sm dark:prose-invert max-w-none h-[420px] overflow-y-auto ${
-                      isLoading ? "cursor-not-allowed" : ""
-                    }`}
+                    contentEditableClassName={`text-xs sm:text-sm max-w-none h-[260px] sm:h-[420px] overflow-y-auto ${
+                      isLoading ? "cursor-not-allowed opacity-50" : ""
+                    } dark:text-white`}
                   />
                 </div>
                 {renderErrorLine(errors.jobDescription)}
@@ -256,10 +256,10 @@ const JobMatchingTab: React.FC = () => {
           </div>
 
           {/* Technical Skills Section */}
-          <div className="p-4 border rounded-lg dark:bg-gray-800">
+          <div className="p-2 sm:p-4 border rounded-lg dark:bg-gray-800">
             <div className="flex flex-col gap-2">
               <div className="flex items-center mb-2">
-                <h3 className="font-medium">Technical Skills</h3>
+                <h3 className="font-medium text-sm sm:text-base">Technical Skills</h3>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -293,12 +293,12 @@ const JobMatchingTab: React.FC = () => {
                 {Object.keys(skills).map((skill) => (
                   <div
                     key={skill}
-                    className="flex items-center gap-4 bg-gray-50 dark:bg-gray-800 rounded"
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 bg-gray-50 dark:bg-gray-800 rounded p-2"
                   >
-                    <Badge className="justify-center dark:text-white w-40 block text-center py-1 bg-secondary hover:bg-secondary/90">
+                    <Badge className="justify-center dark:text-white w-full sm:w-40 block text-center py-1 bg-secondary hover:bg-secondary/90">
                       {skill}
                     </Badge>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full sm:w-auto">
                       <Slider
                         disabled={isLoading}
                         value={[skills[skill]]}
@@ -310,24 +310,26 @@ const JobMatchingTab: React.FC = () => {
                         }}
                         min={0}
                         max={100}
-                        className="text-white"
-                        step={1}
+                        className="text-white w-full"
                       />
                     </div>
 
-                    <div className="w-8 text-right font-medium text-sm">
-                      <span>{skills[skill]}%</span>
-                    </div>
+                    <div className="flex items-center justify-between w-full sm:w-auto mt-2 sm:mt-0">
+                      <div className="w-8 text-right font-medium text-sm">
+                        <span>{skills[skill]}%</span>
+                      </div>
 
-                    <Button
-                      disabled={isLoading}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveSkill(skill)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                      <Button
+                        disabled={isLoading}
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveSkill(skill)}
+                        className="ml-2"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -353,7 +355,7 @@ const JobMatchingTab: React.FC = () => {
             <Button
               type="button"
               disabled={isLoading}
-              className="dark:text-white"
+              className="dark:text-white w-full sm:w-auto"
               onClick={submit}
             >
               {isLoading ? (
@@ -371,7 +373,7 @@ const JobMatchingTab: React.FC = () => {
           </div>
 
           {/* Results Dialog */}
-          <MatchResultDialog
+          <CandidatesResultDialog
             isOpen={isResultsOpen}
             onOpenChange={setIsResultsOpen}
             data={matches || []}

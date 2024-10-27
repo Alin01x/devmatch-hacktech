@@ -87,6 +87,128 @@ body {
   font-family: var(--font-jersey-15);
 }
 
+.prose {
+  color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 65ch;
+}
+
+.dark .prose {
+  color: #d1d5db;
+}
+
+.prose h1 {
+  font-size: 1rem;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111827;
+  margin-top: 1.2em;
+  margin-bottom: 0.6em;
+}
+
+.dark .prose h1 {
+  color: #f3f4f6;
+}
+
+.prose h2 {
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
+}
+
+.dark .prose h2 {
+  color: #f3f4f6;
+}
+
+.prose h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
+.dark .prose h3 {
+  color: #f3f4f6;
+}
+
+.prose p {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  color: #374151;
+}
+
+.dark .prose p {
+  color: #d1d5db;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.dark .prose a {
+  color: #60a5fa;
+}
+
+.prose a:hover {
+  color: #1d4ed8;
+}
+
+.dark .prose a:hover {
+  color: #93c5fd;
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  padding-left: 1.2em;
+}
+
+.prose li {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+.prose blockquote {
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+  padding-left: 0.8em;
+  border-left: 3px solid #e5e7eb;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.dark .prose blockquote {
+  border-left-color: #4b5563;
+  color: #9ca3af;
+}
+
+.prose img {
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+  border-radius: 0.4rem;
+  max-width: 100%;
+}
+
+.prose code {
+  padding: 0.1em 0.3em;
+  font-size: 0.8em;
+  color: #d6336c;
+  background-color: #f3f4f6;
+  border-radius: 0.2rem;
+}
+
+.dark .prose code {
+  color: #f472b6;
+  background-color: #1f2937;
+}
+
 .editorWrapper .mdxeditor-toolbar {
   @apply bg-secondary rounded-b-none rounded-t-md relative;
 }
