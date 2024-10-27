@@ -220,3 +220,8 @@ body {
   caret-color: white;
   color: white;
 }
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+}
