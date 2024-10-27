@@ -8,5 +8,6 @@ export interface JobDescription {
   industry: string; // Main industry the job is in
   detailed_description: string; // Markdown to preserve formatting
   skills: Skills;
+  listed_skills: string[];
   createdAt: Date;
 }

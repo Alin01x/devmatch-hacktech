@@ -94,7 +94,7 @@ const CVMatchingTab = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cvContent }),
+        body: JSON.stringify({ fullContent: cvContent }),
       });
       const data = await response.json();
       setMatchingJob(data);

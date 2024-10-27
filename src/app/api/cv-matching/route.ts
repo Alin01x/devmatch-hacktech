@@ -56,7 +56,7 @@ export const handleCvMatching = async (fullContent: string) => {
   const { data: potentialJobs, error: readError } = await supabase
     .from("job_descriptions")
     .select("*")
-    .overlaps("skills", extractedFields.skills);
+    .overlaps("listed_skills", extractedFields.skills);
   if (readError) throw readError;
 
   let matchingJobs: MatchingJob[] = [];

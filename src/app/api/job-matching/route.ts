@@ -66,6 +66,7 @@ export const handleJobMatching = async (
     job_title: job_title,
     industry,
     skills,
+    listed_skills: Object.keys(skills),
   };
 
   const { data: jobDescription, error: insertError } = await supabase
