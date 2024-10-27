@@ -59,6 +59,15 @@ export const handleCvMatching = async (fullContent: string) => {
     .overlaps("listed_skills", extractedFields.skills);
   if (readError) throw readError;
 
+  // Filter out duplicate job descriptions based on job title and detailed description
+  const uniquePotentialJobs = potentialJobs.filter(
+    (job, index, self) =>
+      index ===
+      self.findIndex(
+        (t) => t.job_title === job.job_title && t.detailed_description === job.detailed_description
+      )
+  );
+
   let matchingJobs: MatchingJob[] = [];
 
   // Initialize services
@@ -67,7 +76,7 @@ export const handleCvMatching = async (fullContent: string) => {
 
   // TODO: initialize the other one too?
 
-  for (const job of potentialJobs) {
+  for (const job of uniquePotentialJobs) {
     // Industry Knowledge Criteria
     // Perform related industries overlap and semantic analysis on each CV
     const { score: industryScore, reasoning: industryReasoning } =

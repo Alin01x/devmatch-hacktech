@@ -94,7 +94,16 @@ export const handleJobMatching = async (
   const industryAnalysisService = new IndustryAnalysisService();
   const overallAnalysisService = new OverallAnalysisService();
 
-  for (const cv of potentialCVs) {
+  // Filter out duplicate CVs based on name and full_content
+  const uniquePotentialCVs = potentialCVs.filter(
+    (cv, index, self) =>
+      index ===
+      self.findIndex(
+        (t) => t.name === cv.name && t.full_content === cv.full_content
+      )
+  );
+
+  for (const cv of uniquePotentialCVs) {
     // Industry Knowledge Criteria
     // Perform related industries overlap and semantic analysis on each CV
     const { score: industryScore, reasoning: industryReasoning } =
