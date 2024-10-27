@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MDXEditor } from "@mdxeditor/editor";
+import { markdownShortcutPlugin, MDXEditor } from "@mdxeditor/editor";
 import {
   headingsPlugin,
   listsPlugin,
@@ -51,11 +51,12 @@ const CVViewDialog: React.FC<CVViewDialogProps> = ({
               contentEditableClassName="prose dark:prose-invert max-w-none dark:text-white"
               className="bg-gray-100 dark:bg-gray-800 rounded-md dark:text-white"
               plugins={[
+                headingsPlugin(),
                 listsPlugin(),
                 quotePlugin(),
-                headingsPlugin(),
                 frontmatterPlugin(),
                 diffSourcePlugin(),
+                markdownShortcutPlugin(),
               ]}
             />
           </div>
