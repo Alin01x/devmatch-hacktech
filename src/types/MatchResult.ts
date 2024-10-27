@@ -1,9 +1,10 @@
 import { CV } from "./CV";
 import { JobDescription } from "./JobDescription";
+
 export type MatchingCV = {
   cv: CV;
 
-  // Industry criteria
+  // Industry criteria 
   industryScore: number;
   industryReasoning: string;
 

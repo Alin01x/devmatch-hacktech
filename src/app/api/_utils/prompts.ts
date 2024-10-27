@@ -28,16 +28,15 @@ Score this CV's match to the job requirements on a scale of 0-100, where:
 - 81-100: Excellent match
 
 Consider:
-1. Required technical skills (weight: 60%)
-2. Domain/industry experience (weight: 40%)
+1. Required technical skills an qualifications (weight: 65%)
+2. Domain/industry experience (weight: 35%)
 
- 
 Return as JSON:
 {
   "score": number,
  }`;
 
-export const BEST_MATCH_REASONING_PROMPT = `
+export const BEST_MATCH_CV_REASONING_PROMPT = `
 As an expert technical recruiter, analyze the alignment between the candidate's CV and job description by:
 
 1. Evaluating exact technical skill matches
@@ -45,7 +44,22 @@ As an expert technical recruiter, analyze the alignment between the candidate's 
 3. Considering years of experience in key required areas
 4. Noting any standout qualifications or certifications
 
-Provide a concise analysis (maximum 3-4 sentences) focusing only on the strongest matching points.
+Provide a concise analysis (maximum 3-4 sentences) focusing only on the strongest matching points on why this candidate is a good match for the job.
+
+Format your response as JSON:
+{
+  "reasoning": string // Brief explanation of why this candidate is the best match
+}`;
+
+export const BEST_MATCH_JOB_REASONING_PROMPT = `
+As an expert technical recruiter, analyze the alignment between the candidate's CV and job description by:
+
+1. Evaluating exact technical skill matches
+2. Identifying relevant domain expertise and industry experience
+3. Considering years of experience in key required areas
+4. Noting any standout qualifications or certifications
+
+Provide a concise analysis (maximum 3-4 sentences) focusing only on the strongest matching points on why this job is a good match for the candidate.
 
 Format your response as JSON:
 {

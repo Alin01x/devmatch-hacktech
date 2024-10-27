@@ -10,7 +10,7 @@ import { SkillAnalysisService } from "../_services/SkillAnalysisService";
 import { OverallAnalysisService } from "../_services/OverallAnalysisService";
 import { getFinalMatchingScore } from "../_utils/getFinalMatchingScore";
 import { sendGPTRequest } from "../_utils/openAI";
-import { BEST_MATCH_REASONING_PROMPT } from "../_utils/prompts";
+import { BEST_MATCH_CV_REASONING_PROMPT } from "../_utils/prompts";
 
 export async function POST(request: Request) {
   try {
@@ -177,7 +177,7 @@ export const handleJobMatching = async (
 
   // Get best match reasoning
   const bestMatchReasoning = await sendGPTRequest({
-    systemPrompt: BEST_MATCH_REASONING_PROMPT,
+    systemPrompt: BEST_MATCH_CV_REASONING_PROMPT,
     userRequest: matchingCVs[0].cv.full_content,
   });
 
