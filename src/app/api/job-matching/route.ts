@@ -60,7 +60,7 @@ export const handleJobMatching = async (
     skills[getSkillWithProperCase(key)] = weight;
   }
 
-  // Store Job Descriptions in the database
+  // Store Job Description in the database
   const jobDescriptionData = {
     detailed_description: detailed_description,
     job_title: job_title,
@@ -118,7 +118,6 @@ export const handleJobMatching = async (
       overallScore: 0,
       overallAnalysis: {
         aiScore: 0,
-        aiReasoning: "",
       },
       finalScore: 0,
       bestMatchReasoning: "",
@@ -150,7 +149,6 @@ export const handleJobMatching = async (
         overallScore: overallAnalysis.score,
         overallAnalysis: {
           aiScore: overallAnalysis.score,
-          aiReasoning: overallAnalysis.reasoning,
         },
         finalScore: 0,
         bestMatchReasoning: "",
