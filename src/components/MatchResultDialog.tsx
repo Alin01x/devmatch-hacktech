@@ -6,18 +6,27 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileText, Trophy, Briefcase, Code, Star, Target, Gauge, CheckCircle2, Sparkles, UsersRound, Percent } from "lucide-react";
+import {
+  FileText,
+  Trophy,
+  Briefcase,
+  Code,
+  Star,
+  Handshake,
+  X,
+} from "lucide-react";
 import CVViewDialog from "./CVViewDialog";
+import { DialogClose } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MatchingCV } from "@/types/MatchResult";
- 
+
 interface MatchResultDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   data: MatchingCV[];
   title: string;
 }
-  
+
 const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
   isOpen,
   onOpenChange,
@@ -58,13 +67,12 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
     <div className="bg-gradient-to-br bg-brand-orange rounded-lg p-4 text-white">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
- 
-          <Gauge className="w-5 h-5 text-yellow-400" />
+          <Handshake className="w-5 h-5 text-white" />
           <span className="font-medium">Final Score</span>
         </div>
         <div className="text-2xl font-bold">{value}%</div>
       </div>
-      <div className="w-full bg-blue-400/30 rounded-full h-2">
+      <div className="w-full bg-[#e7e3e2] rounded-full h-2">
         <div
           className="bg-white rounded-full h-2 transition-all duration-300"
           style={{ width: `${value}%` }}
@@ -76,28 +84,34 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl p-6">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold mb-6 flex items-center gap-2">
-              {title}
-              <Trophy className="ml-1 w-6 h-6 text-yellow-400" />
-            </DialogTitle>
-          </DialogHeader>
-          <ScrollArea className="h-[calc(100vh-200px)]">
-            <div className="space-y-6">
+        <DialogContent className="max-w-4xl p-0">
+          <ScrollArea className="h-[calc(100vh-200px)] rounded-lg">
+            <DialogHeader className="w-full fixed p-6 bg-white shadow-md rounded-lg">
+              <DialogTitle className="w-full flex items-center justify-between text-2xl font-bold gap-2">
+                <div>{title}</div>
+                <DialogClose asChild>
+                  <div className="rounded-full p-2 hover:bg-gray-100 transition-all duration-200 ease-in-out transform hover:scale-110">
+                    <X className="h-4 w-4 cursor-pointer" />
+                  </div>
+                </DialogClose>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 p-4">
               {data.map((match, index) => (
                 <div
                   key={match.cv.name}
                   className={`rounded-lg border ${
                     index === 0
-                      ? "border-primary border-2 bg-secondary border-l-primary border-l-8 shadow-md"
+                      ? "border-primary border-2 border-l-primary border-l-8 shadow-md mt-20"
                       : "border-gray-200 shadow-sm"
                   } p-6`}
                 >
-                  <div className="flex flex-col gap-6">
-                    <div className="relative flex items-center">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-4">
-                        <h3 className="text-xl font-semibold">{match.cv.name}</h3>
+                        <h3 className="text-xl font-semibold">
+                          {match.cv.name}
+                        </h3>
                         <Button
                           variant="link"
                           onClick={() => setSelectedCV(match)}
@@ -107,92 +121,89 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
                         </Button>
                       </div>
 
-                      {index === 0 && (
-                        <div className="absolute right-0 flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-full shadow-sm">
-                          <Trophy className="w-4 h-4" />
-                          <span className="font-medium">Best Match</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-[2fr,1fr] gap-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          {match.cv.industries.map((industry, idx) => (
-                            <React.Fragment key={industry}>
-                              <span className="text-sm">{industry}</span>
-                              {idx < match.cv.industries.length - 1 && (
-                                <span className="text-lg">•</span>
-                              )}
-                            </React.Fragment>
-                          ))}
-                        </div>
-
-                        <div>
-                          <div className="text-sm text-gray-600 mb-2">
-                            Matched Skills
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {match.technicalSkillsMatched.map((skill) => (
-                              <span
-                                key={skill}
-                                className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm"
-                              >
-                                {skill}
-                              </span>
+                      <div className="flex flex-col gap-6">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-gray-400 font-semibold">
+                            {match.cv.industries.map((industry, idx) => (
+                              <React.Fragment key={industry}>
+                                <span className="text-sm">{industry}</span>
+                                {idx < match.cv.industries.length - 1 && (
+                                  <span className="text-lg">•</span>
+                                )}
+                              </React.Fragment>
                             ))}
                           </div>
-                        </div>
 
-                        <div>
-                          <div className="text-sm text-gray-600 mb-2">
-                            Missing Skills
+                          <div>
+                            <div className="text-sm text-gray-600 mb-2">
+                              Matched Skills
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {match.technicalSkillsMatched.map((skill) => (
+                                <span
+                                  key={skill}
+                                  className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            {match.technicalSkillsMissing.map((skill) => (
-                              <span
-                                key={skill}
-                                className="px-2 py-1 bg-red-100 text-red-800 rounded text-sm"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="space-y-6 w-72">
-                        <TotalScoreDisplay value={match.finalScore} />
-
-                        <div className="space-y-3 bg-gray-50 rounded-lg p-4">
-                          <ScoreCard
-                            label="Industry"
-                            value={match.industryScore}
-                            icon={Briefcase}
-                          />
-                          <ScoreCard
-                            label="Technical"
-                            value={match.technicalScore}
-                            icon={Code}
-                          />
-                          <ScoreCard
-                            label="Overall"
-                            value={match.overallScore}
-                            icon={Star}
-                          />
+                          {match.technicalSkillsMissing.length > 0 && (
+                            <div>
+                              <div className="text-sm text-gray-600 mb-2">
+                                Missing Skills
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {match.technicalSkillsMissing.map((skill) => (
+                                  <span
+                                    key={skill}
+                                    className="px-2 py-1 bg-red-100 text-red-800 rounded text-sm"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
+                    <div className="space-y-6 w-72">
+                      <TotalScoreDisplay value={match.finalScore} />
 
-                    <div className="pt-4 border-t border-gray-200">
-                      <div className="text-sm text-gray-600 mb-2">Analysis</div>
-                      <p className="text-gray-700">
-                        {index === 0
-                          ? match.bestMatchReasoning
-                          : match.overallAnalysis.aiReasoning}
-                      </p>
+                      <div className="space-y-3 bg-secondary rounded-lg p-4">
+                        <ScoreCard
+                          label="Industry"
+                          value={match.industryScore}
+                          icon={Briefcase}
+                        />
+                        <ScoreCard
+                          label="Technical"
+                          value={match.technicalScore}
+                          icon={Code}
+                        />
+                        <ScoreCard
+                          label="Overall"
+                          value={match.overallScore}
+                          icon={Star}
+                        />
+                      </div>
                     </div>
                   </div>
+
+                  {index === 0 && (
+                    <div className="flex flex-col items-start gap-2 pt-4 border-t border-gray-200 mt-4">
+                      <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-l from-yellow-300 to-yellow-400 text-white rounded-full shadow-sm">
+                        <Trophy className="w-4 h-4" />
+                        <span className="font-medium">Best Match</span>
+                      </div>
+                      <p className="text-gray-700">
+                        {match.bestMatchReasoning}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
