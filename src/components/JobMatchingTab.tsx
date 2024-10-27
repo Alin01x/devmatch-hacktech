@@ -189,7 +189,7 @@ const JobMatchingTab: React.FC = () => {
           Job Requirements Matching
         </CardTitle>
         <CardDescription>
-          Enter a job description to find the top 5 matching candidates
+          Enter a job to find the top 5 matching candidates
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -219,7 +219,7 @@ const JobMatchingTab: React.FC = () => {
                 {renderErrorLine(errors.industry)}
               </div>
               <div>
-                <div className="editorWrapper border border-input rounded-lg h-[462px]">
+                <div className="editorWrapper border border-input rounded-lg h-[462px] overflow-hidden">
                   <MDXEditor
                     onChange={setJobDescription}
                     markdown={jobDescription}
@@ -260,7 +260,7 @@ const JobMatchingTab: React.FC = () => {
                       <Info className="size-4 text-black dark:text-white cursor-pointer ml-2" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Example: React, Python, SQL...</p>
+                      <p>e.g. JavaScript, React, Python...</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
