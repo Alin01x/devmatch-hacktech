@@ -47,7 +47,9 @@ const CandidatesResultDialog: React.FC<CandidatesResultDialogProps> = ({
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2 min-w-24">
         <Icon className="w-4 h-4 brand-light-blue dark:text-brand-light-blue" />
-        <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
+        <span className="text-sm text-gray-600 dark:text-gray-300">
+          {label}
+        </span>
       </div>
       <div className="flex-1 flex items-center gap-2">
         <div className="flex-1 bg-gray-100 dark:bg-gray-300 rounded-full h-1.5">
@@ -102,7 +104,7 @@ const CandidatesResultDialog: React.FC<CandidatesResultDialogProps> = ({
                   key={index}
                   className={`rounded-lg border ${
                     index === 0
-                      ? "border-primary border-2 border-l-primary border-l-8 shadow-md mt-20 sm:mt-24"
+                      ? "border-primary border-2 border-l-primary border-l-8 shadow-md"
                       : "border-gray-200 dark:border-gray-700 shadow-sm"
                   } p-4 sm:p-6 dark:bg-gray-800`}
                 >
@@ -126,9 +128,13 @@ const CandidatesResultDialog: React.FC<CandidatesResultDialogProps> = ({
                           <div className="flex items-center flex-wrap gap-x-2 gap-y-0 text-gray-400 dark:text-gray-300 font-semibold">
                             {match.cv.industries.map((industry, idx) => (
                               <React.Fragment key={industry}>
-                                <span className="text-sm lg:text-nowrap">{industry} {industry} {industry}</span>
+                                <span className="text-sm lg:text-nowrap">
+                                  {industry} {industry} {industry}
+                                </span>
                                 {idx < match.cv.industries.length - 1 && (
-                                  <span className="text-md py-0 my-0 hidden xl:block">•</span>
+                                  <span className="text-md py-0 my-0 hidden xl:block">
+                                    •
+                                  </span>
                                 )}
                               </React.Fragment>
                             ))}
