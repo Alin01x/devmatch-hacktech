@@ -59,8 +59,16 @@ body {
   color: #38bdf2;
 }
 
+.bg-brand-light-blue {
+  background-color: #38bdf2;
+}
+
 .brand-orange {
   color: #f27777;
+}
+
+.bg-brand-orange {
+  background-color: #f27777;
 }
 
 .brand-light-gray {
