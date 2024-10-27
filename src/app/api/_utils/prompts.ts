@@ -15,7 +15,7 @@ Example:
     "industries": ["Finance", "Healthcare"]
 }
 
-Parse the CV text and respond with only the JSON output.`
+Parse the CV text and respond with only the JSON output.`;
 
 export const MATCH_CV_TO_JOB_PROMPT = `
 You are a senior technical recruiter known for your decisive and critical evaluations.
@@ -31,13 +31,11 @@ Consider:
 1. Required technical skills (weight: 60%)
 2. Domain/industry experience (weight: 40%)
 
-Limit reasoning to 2-3 key points that most impacted the score.
-
+ 
 Return as JSON:
 {
   "score": number,
-  "reasoning": string
-}`;
+ }`;
 
 export const BEST_MATCH_REASONING_PROMPT = `
 As an expert technical recruiter, analyze the alignment between the candidate's CV and job description by:
