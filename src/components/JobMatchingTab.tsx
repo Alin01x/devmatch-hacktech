@@ -42,6 +42,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SKILLS as SKILLS_OPTIONS } from "@/constants/skills";
 import MatchResultDialog from "@/components/MatchResultDialog";
 import { MatchingCV } from "@/types/MatchResult";
+import NoResultsDialog from "./NoResultsDialog";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -67,6 +68,7 @@ const JobMatchingTab: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [matches, setMatches] = useState<MatchingCV[]>([]);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [showNoResults, setShowNoResults] = useState(false);
 
   const { toast } = useToast();
   const [errors, setErrors] = useState<{
@@ -157,9 +159,13 @@ const JobMatchingTab: React.FC = () => {
       });
 
       const data = await response.json();
-      setMatches(data.data);
-      setIsResultsOpen(true);
-      console.log("received response", data);
+
+      if (data.data?.length > 0) {
+        setMatches(data.data);
+        setIsResultsOpen(true);
+      } else {
+        setShowNoResults(true);
+      }
     } catch (e) {
       console.error(e);
       toast({
@@ -368,6 +374,12 @@ const JobMatchingTab: React.FC = () => {
             onOpenChange={setIsResultsOpen}
             data={matches || []}
             title="Top 5 Matching Candidates"
+          />
+
+          <NoResultsDialog
+            isOpen={showNoResults}
+            onOpenChange={setShowNoResults}
+            type="candidates"
           />
         </div>
       </CardContent>

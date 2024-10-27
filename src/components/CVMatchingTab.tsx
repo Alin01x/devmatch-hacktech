@@ -28,6 +28,7 @@ import {
   quotePlugin,
 } from "@mdxeditor/editor";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
+import NoResultsDialog from "./NoResultsDialog";
 
 // Dynamically import MDXEditor with SSR disabled
 const MDXEditor = dynamic(
@@ -48,6 +49,7 @@ const CVMatchingTab = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [matchingJob, setMatchingJob] = useState<MatchingJob | null>(null);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [showNoResults, setShowNoResults] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -97,8 +99,13 @@ const CVMatchingTab = () => {
         body: JSON.stringify({ fullContent: cvContent }),
       });
       const data = await response.json();
-      setMatchingJob(data);
-      setIsResultsOpen(true);
+
+      if (data.data?.length > 0) {
+        setMatchingJob(data);
+        setIsResultsOpen(true);
+      } else {
+        setShowNoResults(true);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -240,6 +247,11 @@ const CVMatchingTab = () => {
               </ScrollArea>
             </DialogContent>
           </Dialog>
+          <NoResultsDialog
+            isOpen={showNoResults}
+            onOpenChange={setShowNoResults}
+            type="jobs"
+          />
         </div>
       </CardContent>
     </Card>
