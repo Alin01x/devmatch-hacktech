@@ -104,7 +104,7 @@ const CandidatesResultDialog: React.FC<CandidatesResultDialogProps> = ({
                   key={index}
                   className={`rounded-lg border ${
                     index === 0
-                      ? "border-primary border-2 border-l-primary border-l-8 shadow-md"
+                      ? "border-primary border-2 border-l-primary border-l-8 shadow-md mt-10"
                       : "border-gray-200 dark:border-gray-700 shadow-sm"
                   } p-4 sm:p-6 dark:bg-gray-800`}
                 >
