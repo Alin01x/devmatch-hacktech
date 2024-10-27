@@ -87,7 +87,7 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
         <DialogContent className="max-w-4xl p-0">
           <ScrollArea className="h-[calc(100vh-200px)] rounded-lg">
             <DialogHeader className="w-full fixed p-6 bg-white shadow-md rounded-lg">
-              <DialogTitle className="w-full flex items-center justify-between text-2xl font-bold gap-2">
+              <DialogTitle className="w-full flex items-center justify-between text-2xl font-bold gap-2 text-gray-600">
                 <div>{title}</div>
                 <DialogClose asChild>
                   <div className="rounded-full p-2 hover:bg-gray-100 transition-all duration-200 ease-in-out transform hover:scale-110">
