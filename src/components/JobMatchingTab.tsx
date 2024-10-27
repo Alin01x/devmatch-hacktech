@@ -366,7 +366,6 @@ const JobMatchingTab: React.FC = () => {
           <MatchResultDialog
             isOpen={isResultsOpen}
             onOpenChange={setIsResultsOpen}
-            mode="cv"
             data={matches || []}
             title="Top 5 Matching Candidates"
           />
