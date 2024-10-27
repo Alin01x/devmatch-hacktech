@@ -1,4 +1,5 @@
-export const EXTRACT_CV_DATA_PROMPT = `You are an assistant that extracts data from a CV.
+export const EXTRACT_CV_DATA_PROMPT = `
+You are an assistant that extracts data from a CV.
 Output must be JSON in the following format:
 {
     "name": "Person's name",
@@ -14,28 +15,23 @@ Example:
 }
 `;
 
-export const MATCH_CV_TO_JOB_PROMPT = `You are an expert technical recruiter. Analyze the match between a job description and CV, focusing on:
-1. Technical skill alignment and domain knowledge
-2. Industry experience relevance
-3. Overall qualification fit
+export const MATCH_CV_TO_JOB_PROMPT = `
+You are an expert technical recruiter. 
+Evaluate how well the CV matches the job description by considering both technical skills and domain knowledge.
+It's important to keep your reasoning short, concise and to the point.
 
-Important: keep your reasoning concise and to the point.
-
-Provide a score from between 0 and 100 and detailed reasoning. Return response as JSON with format:
+Provide a score between 0 and 100 and reasoning. Return response as JSON with format:
 {
   "score": number,
   "reasoning": string
 }`;
 
-export const BEST_MATCH_REASONING_PROMPT = `You are an expert technical recruiter. Analyze the match between a job description and CV, focusing on:
-1. Technical skill alignment and domain knowledge
-2. Industry experience relevance
-3. Overall qualification fit
+export const BEST_MATCH_REASONING_PROMPT = `
+You are an expert technical recruiter. 
+Evaluate why this CV is the best match for the job description by considering both technical skills and domain knowledge.
+It's important to keep your reasoning short, concise and to the point.
 
-Provide a detailed reasoning of why this CV is the best match for the job description.
-
-Important: keep your reasoning concise and to the point.
-
+ 
 Return response as JSON with format:
 {
   "reasoning": string
