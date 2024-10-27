@@ -5,7 +5,9 @@ import { MatchingJob } from "@/types/MatchResult";
 import { IndustryAnalysisService } from "../_services/IndustryAnalysisService";
 import { OverallAnalysisService } from "../_services/OverallAnalysisService";
 import { SkillAnalysisService } from "../_services/SkillAnalysisService";
-import { CV } from "@/types/CV";
+import { getFinalMatchingScore } from "../_utils/getFinalMatchingScore";
+import { sendGPTRequest } from "../_utils/openAI";
+import { BEST_MATCH_JOB_REASONING_PROMPT } from "../_utils/prompts";
 
 export async function POST(request: Request) {
   try {
@@ -105,76 +107,70 @@ export const handleCvMatching = async (fullContent: string) => {
     return weightedScoreB - weightedScoreA;
   });
 
-  // Let's narrow down by only analyzing further the top 10 jobs
-  matchingJobs = matchingJobs.slice(0, 10);
+  // Let's narrow down by only analyzing further the top 5 jobs
+  matchingJobs = matchingJobs.slice(0, 5);
 
-  const matchinbJobsWithoutJob = matchingJobs.map((matchingJob) => {
-    return {
-      industryScore: matchingJob.industryScore,
-      technicalScore: matchingJob.technicalScore,
-      technicalSkillsMatched: matchingJob.technicalSkillsMatched,
-    };
-  });
-  console.log(matchinbJobsWithoutJob);
   // Get overall analysis (OpenAI)
-  // matchingJobs = await Promise.all(
-  //   matchingJobs.map(async (matchinbJob) => {
-  //     // Get overall analysis (OpenAI)
-  //     const overallAnalysis = await overallAnalysisService.analyzeMatch(
-  //       cv,
-  //       matchingJob.jobDescription.detailed_description
-  //     );
+  matchingJobs = await Promise.all(
+    matchingJobs.map(async (matchingJob) => {
+      // Get overall analysis (OpenAI)
+      const overallAnalysis = await overallAnalysisService.analyzeMatch(
+        cv,
+        matchingJob.jobDescription
+      );
 
-  //     return {
-  //       ...matchingCV,
-  //       overallScore: overallAnalysis.score,
-  //       overallAnalysis: {
-  //         aiScore: overallAnalysis.score,
-  //       },
-  //       finalScore: 0,
-  //       bestMatchReasoning: "",
-  //     };
-  //   })
-  // );
+      return {
+        ...matchingJob,
+        overallScore: overallAnalysis.score,
+        overallAnalysis: {
+          aiScore: overallAnalysis.score,
+        },
+        finalScore: 0,
+        bestMatchReasoning: "",
+      };
+    })
+  );
 
-  // // Calculate final score
-  // // Industry Knowledge Criteria (10%)
-  // // Technical Skills Criteria (30%)
-  // // Job Description and CV Matching (60%)
+  // Calculate final score
+  // Industry Knowledge Criteria (10%)
+  // Technical Skills Criteria (30%)
+  // Job Description and CV Matching (60%)
 
-  // matchingCVs.forEach((cv) => {
-  //   cv.finalScore = getFinalMatchingScore(
-  //     cv.industryScore,
-  //     cv.technicalScore,
-  //     cv.overallScore
-  //   );
-  // });
+  matchingJobs.forEach((job) => {
+    job.finalScore = getFinalMatchingScore(
+      job.industryScore,
+      job.technicalScore,
+      job.overallScore
+    );
+  });
 
-  // // Sort by final score
-  // matchingCVs.sort((a, b) => b.finalScore - a.finalScore);
+  // Sort by final score
+  matchingJobs.sort((a, b) => b.finalScore - a.finalScore);
 
-  // // Keep the best 5 CVs
-  // matchingCVs = matchingCVs.slice(0, 5);
+  // Keep the best 5 CVs
+  matchingJobs = matchingJobs.slice(0, 5);
 
-  // // Get best match reasoning
-  // const bestMatchReasoning = await sendGPTRequest({
-  //   systemPrompt: BEST_MATCH_REASONING_PROMPT,
-  //   userRequest: matchingCVs[0].cv.full_content,
-  // });
+  // Get best match reasoning
+  const bestMatchReasoning = await sendGPTRequest({
+    systemPrompt: BEST_MATCH_JOB_REASONING_PROMPT,
+    userRequest: matchingJobs[0].jobDescription.detailed_description,
+  });
 
-  // matchingCVs[0].bestMatchReasoning = bestMatchReasoning.reasoning;
+  matchingJobs[0].bestMatchReasoning = bestMatchReasoning.reasoning;
 
-  // // Ensure all scores have no decimals
-  // matchingCVs.forEach((cv) => {
-  //   cv.industryScore = Math.round(cv.industryScore);
-  //   cv.technicalScore = Math.round(cv.technicalScore);
-  //   cv.overallScore = Math.round(cv.overallScore);
-  //   cv.finalScore = Math.round(cv.finalScore);
-  // });
+  // Ensure all scores have no decimals
+
+  const bestMatchingJob = {
+    ...matchingJobs[0],
+    industryScore: Math.round(matchingJobs[0].industryScore),
+    technicalScore: Math.round(matchingJobs[0].technicalScore),
+    overallScore: Math.round(matchingJobs[0].overallScore),
+    finalScore: Math.round(matchingJobs[0].finalScore),
+  };
 
   // Find Matching Job Descriptions
   return new Response(
-    JSON.stringify({ success: true, data: matchingJobs[0] }),
+    JSON.stringify({ success: true, data: bestMatchingJob }),
     {
       status: 200,
       headers: { ...headers, "Content-Type": "application/json" },

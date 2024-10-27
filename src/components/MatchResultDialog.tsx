@@ -72,7 +72,7 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
         </div>
         <div className="text-2xl font-bold">{value}%</div>
       </div>
-      <div className="w-full bg-[#e7e3e2] rounded-full h-2">
+      <div className="w-full bg-[#cccccc] rounded-full h-2">
         <div
           className="bg-white rounded-full h-2 transition-all duration-300"
           style={{ width: `${value}%` }}
@@ -87,7 +87,7 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
         <DialogContent className="max-w-4xl p-0">
           <ScrollArea className="h-[calc(100vh-200px)] rounded-lg">
             <DialogHeader className="w-full fixed p-6 bg-white shadow-md rounded-lg">
-              <DialogTitle className="w-full flex items-center justify-between text-2xl font-bold gap-2">
+              <DialogTitle className="w-full flex items-center justify-between text-2xl font-bold gap-2 text-gray-600">
                 <div>{title}</div>
                 <DialogClose asChild>
                   <div className="rounded-full p-2 hover:bg-gray-100 transition-all duration-200 ease-in-out transform hover:scale-110">
@@ -99,7 +99,7 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
             <div className="space-y-6 p-4">
               {data.map((match, index) => (
                 <div
-                  key={match.cv.name}
+                  key={index}
                   className={`rounded-lg border ${
                     index === 0
                       ? "border-primary border-2 border-l-primary border-l-8 shadow-md mt-20"
@@ -195,11 +195,11 @@ const MatchResultDialog: React.FC<MatchResultDialogProps> = ({
 
                   {index === 0 && (
                     <div className="flex flex-col items-start gap-2 pt-4 border-t border-gray-200 mt-4">
-                      <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-l from-yellow-300 to-yellow-400 text-white rounded-full shadow-sm">
-                        <Trophy className="w-4 h-4" />
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-200 text-gray-800 rounded-full">
+                        <Trophy className="w-4 h-4 text-yellow-500" />
                         <span className="font-medium">Best Match</span>
                       </div>
-                      <p className="text-gray-700">
+                      <p className="text-gray-600">
                         {match.bestMatchReasoning}
                       </p>
                     </div>
