@@ -1,7 +1,8 @@
 import { headers } from "../_utils/requestHeaders";
 import fs from "fs";
 import mammoth from "mammoth";
-import { handleCvMatching } from "../cv-matching/route";
+import { supabase } from "@/lib/supabase";
+import { extractCvData } from "../_extractors/extractCvData";
 
 export async function GET(request: Request) {
   try {
@@ -26,7 +27,25 @@ export async function GET(request: Request) {
     console.log(`Importing ${fileContents.length} CVs...`);
 
     for (const fullContent of fileContents) {
-      await handleCvMatching(fullContent);
+      const extractedFields: {
+        name: string;
+        skills: string[];
+        industries: string[];
+      } = await extractCvData(fullContent);
+
+      // Store CV in the database
+      const profileData = {
+        name: extractedFields.name,
+        skills: extractedFields.skills,
+        industries: extractedFields.industries,
+        full_content: fullContent,
+      };
+
+      const { data: cv, error: insertError } = await supabase
+        .from("cvs")
+        .insert(profileData)
+        .select()
+        .single();
     }
 
     return new Response(JSON.stringify({ success: true }), {
