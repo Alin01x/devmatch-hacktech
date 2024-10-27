@@ -103,6 +103,13 @@ export const handleJobMatching = async (
       )
   );
 
+  if (uniquePotentialCVs.length === 0) {
+    return new Response(JSON.stringify({ success: true, data: [] }), {
+      status: 200,
+      headers: { ...headers, "Content-Type": "application/json" },
+    });
+  }
+
   for (const cv of uniquePotentialCVs) {
     // Industry Knowledge Criteria
     // Perform related industries overlap and semantic analysis on each CV

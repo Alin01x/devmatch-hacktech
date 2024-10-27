@@ -68,6 +68,13 @@ export const handleCvMatching = async (fullContent: string) => {
       )
   );
 
+  if (uniquePotentialJobs.length === 0) {
+    return new Response(JSON.stringify({ success: true, data: [] }), {
+      status: 200,
+      headers: { ...headers, "Content-Type": "application/json" },
+    });
+  }
+
   let matchingJobs: MatchingJob[] = [];
 
   // Initialize services
