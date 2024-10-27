@@ -47,7 +47,7 @@ const getSkillWithProperCase = (skill: string) => {
   return skillWithProperCase || skill;
 };
 
-export const handleJobMatching = async (
+const handleJobMatching = async (
   job_title: string,
   industry: string,
   detailed_description: string,

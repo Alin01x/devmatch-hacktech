@@ -373,7 +373,7 @@ const JobMatchingTab: React.FC = () => {
           </div>
 
           {/* Results Dialog */}
-          <CandidatesResultDialog
+        <CandidatesResultDialog
             isOpen={isResultsOpen}
             onOpenChange={setIsResultsOpen}
             data={matches || []}

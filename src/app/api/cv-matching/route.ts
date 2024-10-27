@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   }
 }
 
-export const handleCvMatching = async (fullContent: string) => {
+const handleCvMatching = async (fullContent: string) => {
   const extractedFields: {
     name: string;
     skills: string[];
@@ -64,7 +64,9 @@ export const handleCvMatching = async (fullContent: string) => {
     (job, index, self) =>
       index ===
       self.findIndex(
-        (t) => t.job_title === job.job_title && t.detailed_description === job.detailed_description
+        (t) =>
+          t.job_title === job.job_title &&
+          t.detailed_description === job.detailed_description
       )
   );
 
