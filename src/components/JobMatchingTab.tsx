@@ -300,6 +300,7 @@ const JobMatchingTab: React.FC = () => {
                     </Badge>
                     <div className="flex-1">
                       <Slider
+                        disabled={isLoading}
                         value={[skills[skill]]}
                         onValueChange={(value) => {
                           setSkills({
@@ -319,6 +320,7 @@ const JobMatchingTab: React.FC = () => {
                     </div>
 
                     <Button
+                      disabled={isLoading}
                       type="button"
                       variant="ghost"
                       size="sm"
