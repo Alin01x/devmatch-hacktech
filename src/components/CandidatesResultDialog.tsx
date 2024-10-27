@@ -42,7 +42,7 @@ const CandidatesResultDialog: React.FC<CandidatesResultDialogProps> = ({
   }: {
     label: string;
     value: number;
-    icon: React.ComponentType<any>;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   }) => (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2 min-w-24">

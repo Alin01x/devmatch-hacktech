@@ -17,6 +17,7 @@ import {
 import { X, Briefcase, Code, Star, Handshake } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { MatchingJob } from "@/types/MatchResult";
+import { LucideIcon } from 'lucide-react';
 
 const ScoreCard = ({
   label,
@@ -25,7 +26,7 @@ const ScoreCard = ({
 }: {
   label: string;
   value: number;
-  icon: React.ComponentType<any>;
+  icon: LucideIcon;
 }) => (
   <div className="flex items-center gap-3">
     <div className="flex items-center gap-2 min-w-24">
