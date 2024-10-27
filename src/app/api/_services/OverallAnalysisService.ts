@@ -39,7 +39,7 @@ ${cv.full_content}
     const response = await sendGPTRequest({
       systemPrompt: MATCH_CV_TO_JOB_PROMPT,
       userRequest: userMessage,
-      temperature: 0.3, // Lower temperature for more consistent scoring
+      temperature: 1.0,
     });
 
     return {
